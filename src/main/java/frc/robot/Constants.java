@@ -16,7 +16,6 @@ public final class Constants {
     // Drivetrain CAN IDs
     public static int[] left_DT_CAN = {11,12,13};
     public static int[] rite_DT_CAN = {14,15,16};
-    //drivetrain power
     public static double drivetrainPower = 1;
 
     // Controller Ports

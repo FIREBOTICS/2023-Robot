@@ -36,18 +36,6 @@ public class Drivetrain extends SubsystemBase {
     public void arcadeDrive(double speed, double rotation){
         m_drive.arcadeDrive(speed, rotation);
     }
-    
-    public void movestraight(int xSpeed){
-        m_drive.arcadeDrive(xSpeed, 0.0);
-    }
-
-    public void pivot(int zRotation){
-        m_drive.arcadeDrive(0, zRotation);
-    }
-
-    public void brake(){
-        m_drive.arcadeDrive(0, 0);
-    }
 
     //see the values in the SmartDashboard Application
     public void getLeftEncoder(){
@@ -58,7 +46,6 @@ public class Drivetrain extends SubsystemBase {
          * GetPosition() returns the position of the encoder in units of revolutions
          */
         SmartDashboard.putNumber("Left Encoder Position", m_leftEncoder.getPosition());
-
         /**
          * Encoder velocity is read from a RelativeEncoder object by calling the
          * GetVelocity() method.
