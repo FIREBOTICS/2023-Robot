@@ -13,6 +13,11 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static int[] left_DT_CAN = {3,4,5};
-    public static int[] rite_DT_CAN = {6,7,8};
+    // Drivetrain CAN IDs
+    public static int[] left_DT_CAN = {11,12,13};
+    public static int[] rite_DT_CAN = {14,15,16};
+
+    // Controller Ports
+    public static int XboxController0 = 0;
+    public static int XboxController1 = 1;
 }
