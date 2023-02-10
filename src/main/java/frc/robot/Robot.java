@@ -5,8 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Drivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -17,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
+  public static Drivetrain m_drivetrain = new Drivetrain();
+  public static XboxController XboxController0 = new XboxController(Constants.XboxController0);
   private RobotContainer m_robotContainer;
 
   /**
@@ -28,6 +32,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    m_drivetrain.initializeSparks();
   }
 
   /**
@@ -81,7 +87,22 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    double getLeftY = XboxController0.getLeftY();
+    double getRightY = XboxController0.getRightY();
+    m_drivetrain.tankDrive(getLeftY, getRightY);
+
+    if(XboxController0.getXButton()) { //11
+      m_drivetrain.testMotor1();
+    }
+    if(XboxController0.getYButton()) { //12
+      m_drivetrain.testMotor2();
+    }
+    if(XboxController0.getAButton()) { //13
+      m_drivetrain.testMotor3();
+    }
+
+  }
 
   @Override
   public void testInit() {

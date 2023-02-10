@@ -30,11 +30,33 @@ public class Drivetrain extends SubsystemBase {
 
     DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
 
+    public void initializeSparks() {
+        // m_frontLeft.restoreFactoryDefaults(); -- NEEDS TO BE INVERTED
+        m_middleLeft.restoreFactoryDefaults();
+        m_backLeft.restoreFactoryDefaults();
+        
+        m_frontRight.restoreFactoryDefaults();
+        m_middleRight.restoreFactoryDefaults();
+        m_backRight.restoreFactoryDefaults();
+
+        m_left.setInverted(true);
+    }
+
     public void tankDrive(double y_left, double y_right){
-        m_drive.tankDrive(y_left, y_right);
+        m_drive.tankDrive(y_left*Constants.drivetrainPower, y_right*Constants.drivetrainPower);
     }
     public void arcadeDrive(double speed, double rotation){
-        m_drive.arcadeDrive(speed, rotation);
+        m_drive.arcadeDrive(speed*Constants.drivetrainPower, rotation);
+    }
+
+    public void testMotor1() {
+        m_frontRight.set(Constants.drivetrainPower);
+    }
+    public void testMotor2() {
+        m_middleRight.set(Constants.drivetrainPower);
+    }
+    public void testMotor3() {
+        m_backRight.set(Constants.drivetrainPower);
     }
 
     //see the values in the SmartDashboard Application
