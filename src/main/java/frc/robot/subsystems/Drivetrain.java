@@ -31,7 +31,8 @@ public class Drivetrain extends SubsystemBase {
     DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
 
     public void initializeSparks() {
-        // m_frontLeft.restoreFactoryDefaults(); -- NEEDS TO BE INVERTED
+        m_frontLeft.restoreFactoryDefaults();
+            m_frontLeft.setInverted(true);
         m_middleLeft.restoreFactoryDefaults();
         m_backLeft.restoreFactoryDefaults();
         
@@ -49,13 +50,23 @@ public class Drivetrain extends SubsystemBase {
         m_drive.arcadeDrive(speed*Constants.drivetrainPower, rotation);
     }
 
-    public void testMotor1() {
+    public void testMotorL1() {
+        m_frontLeft.set(Constants.drivetrainPower);
+    }
+    public void testMotorL2() {
+        m_middleLeft.set(Constants.drivetrainPower);
+    }
+    public void testMotorL3() {
+        m_backLeft.set(Constants.drivetrainPower);
+    }
+
+    public void testMotorR1() {
         m_frontRight.set(Constants.drivetrainPower);
     }
-    public void testMotor2() {
+    public void testMotorR2() {
         m_middleRight.set(Constants.drivetrainPower);
     }
-    public void testMotor3() {
+    public void testMotorR3() {
         m_backRight.set(Constants.drivetrainPower);
     }
 

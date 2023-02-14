@@ -92,16 +92,6 @@ public class Robot extends TimedRobot {
     double getRightY = XboxController0.getRightY();
     m_drivetrain.tankDrive(getLeftY, getRightY);
 
-    if(XboxController0.getXButton()) { //11
-      m_drivetrain.testMotor1();
-    }
-    if(XboxController0.getYButton()) { //12
-      m_drivetrain.testMotor2();
-    }
-    if(XboxController0.getAButton()) { //13
-      m_drivetrain.testMotor3();
-    }
-
   }
 
   @Override
@@ -112,7 +102,33 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    double getLeftY = XboxController0.getLeftY();
+    double getRightY = XboxController0.getRightY();
+    m_drivetrain.tankDrive(getLeftY, getRightY);
+
+
+    if(XboxController0.getXButton()) { //11
+      m_drivetrain.testMotorL1();
+    }
+    if(XboxController0.getYButton()) { //12
+      m_drivetrain.testMotorL2();
+    }
+    if(XboxController0.getAButton()) { //13
+      m_drivetrain.testMotorL3();
+    }
+
+    // if(XboxController0.get()) { //11
+    //   m_drivetrain.testMotorR1();
+    // }
+    // if(XboxController0.getYButton()) { //12
+    //   m_drivetrain.testMotorR2();
+    // }
+    // if(XboxController0.getAButton()) { //13
+    //   m_drivetrain.testMotorR3();
+    // }
+
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
