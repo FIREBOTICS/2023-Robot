@@ -30,17 +30,24 @@ public class Drivetrain extends SubsystemBase {
 
     DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
 
-    public void initializeSparks() {
+    public void sparksInit() {
         m_frontLeft.restoreFactoryDefaults();
-            m_frontLeft.setInverted(true);
+            // m_frontLeft.setInverted(true);
         m_middleLeft.restoreFactoryDefaults();
+        
         m_backLeft.restoreFactoryDefaults();
         
         m_frontRight.restoreFactoryDefaults();
         m_middleRight.restoreFactoryDefaults();
         m_backRight.restoreFactoryDefaults();
 
+        m_frontLeft.setInverted(true);
         m_left.setInverted(true);
+    }
+
+    public void encodersInit() {
+        m_leftEncoder.setPosition(0);
+        m_rightEncoder.setPosition(0);
     }
 
     public void tankDrive(double y_left, double y_right){
