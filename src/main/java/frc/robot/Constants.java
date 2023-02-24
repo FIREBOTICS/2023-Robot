@@ -19,8 +19,9 @@ public final class Constants {
     public static double drivetrainPower = 0.5;
 
     // Arm
-    public static int[] arm_CAN = {20,21,22};
+    public static int[] arm_CAN = {20,21};
     public static double armSpeed = 1;
+    public static double intakeSpeed = 1;
 
     // Controller Ports
     public static int XboxController0 = 0;

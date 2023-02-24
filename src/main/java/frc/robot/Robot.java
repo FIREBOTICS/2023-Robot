@@ -26,6 +26,7 @@ public class Robot extends TimedRobot {
   private Arm m_arm = new Arm();
 
   public static XboxController XboxController0 = new XboxController(Constants.XboxController0);
+  public static XboxController XboxController1 = new XboxController(Constants.XboxController1);
   private RobotContainer m_robotContainer;
 
   /**
@@ -97,12 +98,28 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double getLeftY = XboxController0.getLeftY();
-    double getRightY = XboxController0.getRightY();
-    m_drivetrain.tankDrive(getLeftY, getRightY);
+    double get0LeftY = XboxController0.getLeftY();
+    double get0RightY = XboxController0.getRightY();
+    double get1LeftY = XboxController1.getLeftY();
+    double get1RightY = XboxController1.getRightY();
 
-    //m_arm.raise(XboxController0.getAButton()*Constants.armRaiseSpeed);
+    m_drivetrain.tankDrive(get0LeftY, get0RightY);
 
+    // if bumpers, read bumpers, else read leftStick
+    if(XboxController1.getLeftBumper()) {
+      m_arm.raise(Constants.armSpeed);
+    } else
+    if(XboxController1.getRightBumper()) {
+      m_arm.raise(-Constants.armSpeed);
+    } else {
+      m_arm.raise(get1LeftY);
+    }
+
+    // UNTESTED
+    // if triggers, read triggers, else read rightStick
+    m_arm.intake(XboxController1.getLeftTriggerAxis());
+    m_arm.intake(-XboxController1.getRightTriggerAxis());
+    m_arm.intake(get1RightY);
   }
 
   @Override
@@ -128,15 +145,23 @@ public class Robot extends TimedRobot {
       m_drivetrain.testMotorL3();
     }
     /* ============================= */
-    if(XboxController0.getPOV() == 0) { //14
-      m_drivetrain.testMotorR1();
+    switch (XboxController0.getPOV()) {
+      case   0:m_drivetrain.testMotorR1();break;
+      case  90:m_drivetrain.testMotorR1();break;
+      case 180:m_drivetrain.testMotorR1();break;
+    
+      default:
+        break;
     }
-    if(XboxController0.getPOV() == 90) { //15
-      m_drivetrain.testMotorR2();
-    }
-    if(XboxController0.getPOV() == 180) { //16
-      m_drivetrain.testMotorR3();
-    }
+    // if(XboxController0.getPOV() == 0) { //14
+    //   m_drivetrain.testMotorR1();
+    // }
+    // if(XboxController0.getPOV() == 90) { //15
+    //   m_drivetrain.testMotorR2();
+    // }
+    // if(XboxController0.getPOV() == 180) { //16
+    //   m_drivetrain.testMotorR3();  
+    // }
 
 
     if(XboxController0.getLeftBumper()) {
@@ -145,19 +170,10 @@ public class Robot extends TimedRobot {
     if(XboxController0.getRightBumper()) {
       m_arm.raise(-Constants.armSpeed);
     } else {
-      m_arm.raise (0);
+      m_arm.raise(0);
     }
-
-
-    // if(XboxController0.get()) { //11
-    //   m_drivetrain.testMotorR1();
-    // }
-    // if(XboxController0.getYButton()) { //12
-    //   m_drivetrain.testMotorR2();
-    // }
-    // if(XboxController0.getAButton()) { //13
-    //   m_drivetrain.testMotorR3();
-    // }
+    m_arm.intake(XboxController0.getLeftTriggerAxis());
+    m_arm.intake(-XboxController0.getRightTriggerAxis());
 
   }
 
