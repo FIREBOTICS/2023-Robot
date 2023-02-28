@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -122,11 +123,13 @@ public class Robot extends TimedRobot {
     m_arm.intake(get1RightY);
   }
 
+
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
-  }
+    // CameraServer.startAutomaticCapture();
+    }
 
   /** This function is called periodically during test mode. */
   @Override
