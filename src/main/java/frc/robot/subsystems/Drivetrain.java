@@ -51,10 +51,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void tankDrive(double y_left, double y_right){
-        m_drive.tankDrive(y_left*Constants.drivetrainPower, y_right*Constants.drivetrainPower);
-    }
-    public void arcadeDrive(double speed, double rotation){
-        m_drive.arcadeDrive(speed*Constants.drivetrainPower, rotation);
+        //square values while maintaining sign
+        y_left  *= Math.abs(y_left)  * Constants.drivetrainPower;
+        y_right *= Math.abs(y_right) * Constants.drivetrainPower;
+        m_drive.tankDrive(y_left, y_right);
     }
 
     public void testMotorL1() {

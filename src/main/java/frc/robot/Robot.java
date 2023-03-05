@@ -118,9 +118,14 @@ public class Robot extends TimedRobot {
 
     // UNTESTED
     // if triggers, read triggers, else read rightStick
-    m_arm.intake(XboxController1.getLeftTriggerAxis());
-    m_arm.intake(-XboxController1.getRightTriggerAxis());
-    m_arm.intake(get1RightY);
+    if(XboxController1.getLeftTriggerAxis() > 0) {
+      m_arm.intake(XboxController1.getLeftTriggerAxis());
+    } else
+    if(XboxController1.getRightTriggerAxis() > 0) {
+      m_arm.intake(-XboxController1.getRightTriggerAxis());
+    } else {
+      m_arm.intake(get1RightY);
+    }
   }
 
 
@@ -136,6 +141,7 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     double getLeftY = XboxController0.getLeftY();
     double getRightY = XboxController0.getRightY();
+
     m_drivetrain.tankDrive(getLeftY, getRightY);
 
     if(XboxController0.getXButton()) { //11

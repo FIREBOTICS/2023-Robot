@@ -20,7 +20,7 @@ public final class Constants {
 
     // Arm
     public static int[] arm_CAN = {20,21};
-    public static double armSpeed = 1;
+    public static double armSpeed = 0.1;
     public static double intakeSpeed = 1;
 
     // Controller Ports
