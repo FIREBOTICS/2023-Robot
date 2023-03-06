@@ -13,6 +13,10 @@ import frc.robot.Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.RelativeEncoder;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.XboxController;
+
 
 public class Drivetrain extends SubsystemBase {
     // set up each motor and combine into full drivetrain
@@ -29,6 +33,8 @@ public class Drivetrain extends SubsystemBase {
     MotorControllerGroup m_right = new MotorControllerGroup(m_frontRight, m_middleRight, m_backRight);
 
     DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
+
+    MecanumDrive mecanumDrive = new MecanumDrive(m_frontLeft, m_backLeft, m_frontRight, m_backRight);
 
     public void sparksInit() {
         m_frontLeft.restoreFactoryDefaults();
@@ -99,5 +105,30 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Right Encoder Position", m_rightEncoder.getPosition());
         SmartDashboard.putNumber("Right Encoder Velocity", m_rightEncoder.getVelocity());
 
+    }
+
+    public void balance(XboxController XboxController0){
+        //https://pdocs.kauailabs.com/navx-mxp/examples/automatic-balancing/
+        while (isOperatorControl() && isEnabled()){
+            Constants.anglePitch = ahrs.getPitch();
+            Constants.angleRoll = ahrs.getRoll();
+            Constants.xAxis = 0;
+            Constants.yAxis = 0;
+            // determine if modification to drive is necessary
+            if(!Constants.autoBalancing && (Math.abs(anglePitch) >= Constants.angleOffThreshold)){
+                Constants.autoBalancing = true;
+            }
+            else if(Constants.autoBalancing && (Math.abs(anglePitch) <= Constants.angleOnThreshold)){
+                Constants.autoBalancing = false;
+            }
+            // correct by reverse driving
+            if(Constants.autoBalancing){
+                Constants.xAxis = Math.sin((Constants.anglePitch * (Math.PI/180))) * -1;
+                Constants.yAxis = Math.sin((Constants.angleRoll * (Math.PI/180))) * -1;
+            }
+            mechanumDrive.mecanumDrive_Cartesian(Constants.xAxis, Constants.yAxis, XboxController0.getRawAxis(), 0);
+            Timer.delay(0.005);
+
+        }
     }
 }
