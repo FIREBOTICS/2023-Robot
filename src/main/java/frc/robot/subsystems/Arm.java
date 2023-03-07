@@ -13,7 +13,7 @@ public class Arm extends SubsystemBase {
     private final VictorSPX m_intake = new VictorSPX(Constants.arm_CAN[1]);
 
     public void raise(double speed) {
-        m_lifter.set(ControlMode.PercentOutput, speed);
+        m_lifter.set(ControlMode.PercentOutput, speed * Constants.armSpeed);
     }
 
     public void intake(double speed) {

@@ -104,31 +104,43 @@ public class Robot extends TimedRobot {
     double get0LeftY = XboxController0.getLeftY();
     double get0RightY = XboxController0.getRightY();
     double get1LeftY = XboxController1.getLeftY();
-    double get1RightY = XboxController1.getRightY();
+    // double get1RightY = XboxController1.getRightY();
 
     m_drivetrain.tankDrive(get0LeftY, get0RightY);
 
-    // if bumpers, read bumpers, else read leftStick
-    if(XboxController1.getLeftBumper()) {
-      m_arm.raise(Constants.armSpeed);
-    } else
-    if(XboxController1.getRightBumper()) {
-      m_arm.raise(-Constants.armSpeed);
-    } else {
-      m_arm.raise(get1LeftY);
+    double rightTrigger = XboxController1.getRightTriggerAxis();
+    double leftTrigger = XboxController1.getLeftTriggerAxis();
+    if(rightTrigger > 0){
+      m_arm.raise(rightTrigger);
     }
-
-    // UNTESTED
-    // if triggers, read triggers, else read rightStick
-    if(XboxController1.getLeftTriggerAxis() > 0) {
-      m_arm.intake(XboxController1.getLeftTriggerAxis());
-    } else
-    if(XboxController1.getRightTriggerAxis() > 0) {
-      m_arm.intake(-XboxController1.getRightTriggerAxis());
-    } else {
-      m_arm.intake(get1RightY);
+    else if(leftTrigger > 0){
+      m_arm.raise(-leftTrigger);
+    }
+    if(get1LeftY != 0){
+      m_arm.intake(get1LeftY);
     }
   }
+  //   // if bumpers, read bumpers, else read leftStick
+  //   if(XboxController1.getLeftBumper()) {
+  //     m_arm.raise(Constants.armSpeed);
+  //   } else
+  //   if(XboxController1.getRightBumper()) {
+  //     m_arm.raise(-Constants.armSpeed);
+  //   } else {
+  //     m_arm.raise(get1LeftY);
+  //   }
+
+  //   // UNTESTED
+  //   // if triggers, read triggers, else read rightStick
+  //   if(XboxController1.getLeftTriggerAxis() > 0) {
+  //     m_arm.intake(XboxController1.getLeftTriggerAxis());
+  //   } else
+  //   if(XboxController1.getRightTriggerAxis() > 0) {
+  //     m_arm.intake(-XboxController1.getRightTriggerAxis());
+  //   } else {
+  //     m_arm.intake(get1RightY);
+  //   }
+  // }
 
 
   @Override
