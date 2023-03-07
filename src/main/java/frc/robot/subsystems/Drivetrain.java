@@ -1,59 +1,63 @@
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.wpilibj.SerialPort; 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.revrobotics.RelativeEncoder;
-
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import edu.wpi.first.wpilibj.XboxController;
 
 
 public class Drivetrain extends SubsystemBase {
     // set up each motor and combine into full drivetrain
-    CANSparkMax m_frontLeft = new CANSparkMax(Constants.left_DT_CAN[0], MotorType.kBrushless);
-    CANSparkMax m_middleLeft = new CANSparkMax(Constants.left_DT_CAN[1], MotorType.kBrushless);
-    CANSparkMax m_backLeft = new CANSparkMax(Constants.left_DT_CAN[2], MotorType.kBrushless);
-    RelativeEncoder m_leftEncoder = m_middleLeft.getEncoder();
-    MotorControllerGroup m_left = new MotorControllerGroup(m_frontLeft, m_middleLeft, m_backLeft);
+    CANSparkMax m_frontLeft, m_middleLeft, m_backLeft;
+    CANSparkMax m_frontRight, m_middleRight, m_backRight;
+    RelativeEncoder m_leftEncoder, m_rightEncoder;
 
-    CANSparkMax m_frontRight  = new CANSparkMax(Constants.rite_DT_CAN[0], MotorType.kBrushless);
-    CANSparkMax m_middleRight = new CANSparkMax(Constants.rite_DT_CAN[1], MotorType.kBrushless);
-    CANSparkMax m_backRight = new CANSparkMax(Constants.rite_DT_CAN[2], MotorType.kBrushless);
-    RelativeEncoder m_rightEncoder = m_middleRight.getEncoder();
-    MotorControllerGroup m_right = new MotorControllerGroup(m_frontRight, m_middleRight, m_backRight);
+    MotorControllerGroup m_left;
+    MotorControllerGroup m_right;
 
-    DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
+    private AHRS ahrs;
 
-    MecanumDrive mecanumDrive = new MecanumDrive(m_frontLeft, m_backLeft, m_frontRight, m_backRight);
+    DifferentialDrive m_drive;
 
-    public void sparksInit() {
-        m_frontLeft.restoreFactoryDefaults();
-            // m_frontLeft.setInverted(true);
-        m_middleLeft.restoreFactoryDefaults();
+    public Drivetrain() {
+        m_frontLeft = new CANSparkMax(Constants.left_DT_CAN[0], MotorType.kBrushless);
+            m_frontLeft.restoreFactoryDefaults();
+            m_frontLeft.setInverted(true); // arrrrg
+        m_middleLeft = new CANSparkMax(Constants.left_DT_CAN[1], MotorType.kBrushless);
+            m_middleLeft.restoreFactoryDefaults();
+        m_backLeft = new CANSparkMax(Constants.left_DT_CAN[2], MotorType.kBrushless);
+            m_backLeft.restoreFactoryDefaults();
+
+        m_frontRight  = new CANSparkMax(Constants.rite_DT_CAN[0], MotorType.kBrushless);
+            m_frontRight.restoreFactoryDefaults();
+        m_middleRight = new CANSparkMax(Constants.rite_DT_CAN[1], MotorType.kBrushless);
+            m_middleRight.restoreFactoryDefaults();
+        m_backRight = new CANSparkMax(Constants.rite_DT_CAN[2], MotorType.kBrushless);
+            m_backRight.restoreFactoryDefaults();
+
+
+        m_left = new MotorControllerGroup(m_frontLeft, m_middleLeft, m_backLeft);
+            m_left.setInverted(true);
+        m_right = new MotorControllerGroup(m_frontRight, m_middleRight, m_backRight);
+        m_drive = new DifferentialDrive(m_left, m_right);
         
-        m_backLeft.restoreFactoryDefaults();
-        
-        m_frontRight.restoreFactoryDefaults();
-        m_middleRight.restoreFactoryDefaults();
-        m_backRight.restoreFactoryDefaults();
 
-        m_frontLeft.setInverted(true);
-        m_left.setInverted(true);
-    }
+        m_leftEncoder = m_middleLeft.getEncoder();
+            m_leftEncoder.setPosition(0);
+        m_rightEncoder = m_middleRight.getEncoder();
+            m_rightEncoder.setPosition(0);
 
-    public void encodersInit() {
-        m_leftEncoder.setPosition(0);
-        m_rightEncoder.setPosition(0);
+        ahrs = new AHRS(SerialPort.Port.kMXP);
+        ahrs.reset();
     }
 
     public void tankDrive(double y_left, double y_right){
@@ -63,72 +67,31 @@ public class Drivetrain extends SubsystemBase {
         m_drive.tankDrive(y_left, y_right);
     }
 
-    public void testMotorL1() {
-        m_frontLeft.set(Constants.drivetrainPower);
-    }
-    public void testMotorL2() {
-        m_middleLeft.set(Constants.drivetrainPower);
-    }
-    public void testMotorL3() {
-        m_backLeft.set(Constants.drivetrainPower);
-    }
-
-    public void testMotorR1() {
-        m_frontRight.set(Constants.drivetrainPower);
-    }
-    public void testMotorR2() {
-        m_middleRight.set(Constants.drivetrainPower);
-    }
-    public void testMotorR3() {
-        m_backRight.set(Constants.drivetrainPower);
+    public void testMotor(int motor) {
+        switch (motor) {
+            case 1:m_frontLeft.set(Constants.drivetrainPower);  break;
+            case 2:m_middleLeft.set(Constants.drivetrainPower); break;
+            case 3:m_backLeft.set(Constants.drivetrainPower);   break;
+            case 4:m_frontRight.set(Constants.drivetrainPower); break;
+            case 5:m_middleRight.set(Constants.drivetrainPower);break;
+            case 6:m_backRight.set(Constants.drivetrainPower);  break;
+        }
     }
 
-    //see the values in the SmartDashboard Application
-    public void getLeftEncoder(){
-         /**
-         * Encoder position is read from a RelativeEncoder object by calling the
-         * GetPosition() method.
-         * 
-         * GetPosition() returns the position of the encoder in units of revolutions
-         */
+    public void reloadDash(){
         SmartDashboard.putNumber("Left Encoder Position", m_leftEncoder.getPosition());
-        /**
-         * Encoder velocity is read from a RelativeEncoder object by calling the
-         * GetVelocity() method.
-         * 
-         * GetVelocity() returns the velocity of the encoder in units of RPM
-         */
         SmartDashboard.putNumber("Left Encoder Velocity", m_leftEncoder.getVelocity());
-    }
-
-    public void getRightEncoder(){
         SmartDashboard.putNumber("Right Encoder Position", m_rightEncoder.getPosition());
         SmartDashboard.putNumber("Right Encoder Velocity", m_rightEncoder.getVelocity());
+        SmartDashboard.putData(ahrs);
+        
 
     }
 
-    public void balance(XboxController XboxController0){
-        //https://pdocs.kauailabs.com/navx-mxp/examples/automatic-balancing/
-        while (isOperatorControl() && isEnabled()){
-            Constants.anglePitch = ahrs.getPitch();
-            Constants.angleRoll = ahrs.getRoll();
-            Constants.xAxis = 0;
-            Constants.yAxis = 0;
-            // determine if modification to drive is necessary
-            if(!Constants.autoBalancing && (Math.abs(anglePitch) >= Constants.angleOffThreshold)){
-                Constants.autoBalancing = true;
-            }
-            else if(Constants.autoBalancing && (Math.abs(anglePitch) <= Constants.angleOnThreshold)){
-                Constants.autoBalancing = false;
-            }
-            // correct by reverse driving
-            if(Constants.autoBalancing){
-                Constants.xAxis = Math.sin((Constants.anglePitch * (Math.PI/180))) * -1;
-                Constants.yAxis = Math.sin((Constants.angleRoll * (Math.PI/180))) * -1;
-            }
-            mechanumDrive.mecanumDrive_Cartesian(Constants.xAxis, Constants.yAxis, XboxController0.getRawAxis(), 0);
-            Timer.delay(0.005);
-
-        }
+    public void calibrateAHRS() {
+        ahrs.calibrate();
+    }
+    public void closeAHRS() {
+        ahrs.close();
     }
 }

@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Arm;
@@ -21,14 +19,15 @@ import frc.robot.subsystems.Drivetrain;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
-  public static Drivetrain m_drivetrain = new Drivetrain();
-
-  private Arm m_arm = new Arm();
-
-  public static XboxController XboxController0 = new XboxController(Constants.XboxController0);
-  public static XboxController XboxController1 = new XboxController(Constants.XboxController1);
   private RobotContainer m_robotContainer;
+
+
+  private Drivetrain m_drivetrain;
+  private Arm m_arm;
+
+  private XboxController XboxController0;
+  private XboxController XboxController1;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -39,9 +38,12 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_drivetrain = new Drivetrain();
+    m_arm = new Arm();
+    XboxController0 = new XboxController(Constants.XboxController0);
+    XboxController1 = new XboxController(Constants.XboxController1);
 
-    m_drivetrain.sparksInit();
-    m_drivetrain.encodersInit();
+    m_drivetrain.calibrateAHRS();
   }
 
   /**
@@ -58,14 +60,14 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_drivetrain.getLeftEncoder();
-    m_drivetrain.getRightEncoder();
-
+    m_drivetrain.reloadDash();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_drivetrain.closeAHRS();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -145,19 +147,19 @@ public class Robot extends TimedRobot {
     m_drivetrain.tankDrive(getLeftY, getRightY);
 
     if(XboxController0.getXButton()) { //11
-      m_drivetrain.testMotorL1();
+      m_drivetrain.testMotor(1);
     }
     if(XboxController0.getYButton()) { //12
-      m_drivetrain.testMotorL2();
+      m_drivetrain.testMotor(2);
     }
     if(XboxController0.getAButton()) { //13
-      m_drivetrain.testMotorL3();
+      m_drivetrain.testMotor(3);
     }
     /* ============================= */
     switch (XboxController0.getPOV()) {
-      case   0:m_drivetrain.testMotorR1();break;
-      case  90:m_drivetrain.testMotorR1();break;
-      case 180:m_drivetrain.testMotorR1();break;
+      case   0:m_drivetrain.testMotor(4);break;
+      case  90:m_drivetrain.testMotor(5);break;
+      case 180:m_drivetrain.testMotor(6);break;
     
       default:
         break;
