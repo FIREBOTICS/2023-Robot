@@ -31,7 +31,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void raise(double speed) {
-        m_lifter.set(ControlMode.PercentOutput, speed);
+        m_lifter.set(ControlMode.PercentOutput, speed * Constants.armSpeed);
     }
 
     public void intake(double speed) {

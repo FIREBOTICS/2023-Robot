@@ -21,13 +21,7 @@ public final class Constants {
     // Auto-Balancing
     public static final double angleOffThreshold = 10;
     public static final double angleOnThreshold = 5;
-    public static double xAxis = 0;
-    public static double yAxis = 0;
-    public static double anglePitch = 0;
-    public static double angleRoll = 0;
     public static boolean autoBalancing = false;
-    // public static boolean xAutoBalancing = false;
-    // public static boolean yAutoBalancing = false;
 
     // Arm
     public static int[] arm_CAN = {20,21};
