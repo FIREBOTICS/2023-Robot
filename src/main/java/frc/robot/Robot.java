@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
     XboxController1 = new XboxController(Constants.XboxController1);
 
     m_drivetrain.calibrateAHRS();
+    m_arm.resetEncoder();
   }
 
   /**
@@ -81,6 +82,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    m_drivetrain.calibrateAHRS();
   }
 
   /** This function is called periodically during autonomous. */
@@ -96,6 +99,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    XboxController1 = new XboxController(Constants.XboxController1);
+    m_drivetrain.calibrateAHRS();
+
   }
 
   /** This function is called periodically during operator control. */
@@ -136,6 +142,9 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     // CameraServer.startAutomaticCapture();
+
+    m_drivetrain.calibrateAHRS();
+
     }
 
   /** This function is called periodically during test mode. */
@@ -164,16 +173,6 @@ public class Robot extends TimedRobot {
       default:
         break;
     }
-    // if(XboxController0.getPOV() == 0) { //14
-    //   m_drivetrain.testMotorR1();
-    // }
-    // if(XboxController0.getPOV() == 90) { //15
-    //   m_drivetrain.testMotorR2();
-    // }
-    // if(XboxController0.getPOV() == 180) { //16
-    //   m_drivetrain.testMotorR3();  
-    // }
-
 
     if(XboxController0.getLeftBumper()) {
       m_arm.raise(Constants.armSpeed);
@@ -183,8 +182,14 @@ public class Robot extends TimedRobot {
     } else {
       m_arm.raise(0);
     }
-    m_arm.intake(XboxController0.getLeftTriggerAxis());
-    m_arm.intake(-XboxController0.getRightTriggerAxis());
+    
+    if(XboxController0.getLeftTriggerAxis() > 0) {
+      m_arm.intake(XboxController0.getLeftTriggerAxis());
+    } else {
+      m_arm.intake(-XboxController0.getRightTriggerAxis());
+    }
+    m_drivetrain.reloadDash();
+    m_arm.reloadDash();
 
   }
 

@@ -31,8 +31,8 @@ public final class Constants {
 
     // Arm
     public static int[] arm_CAN = {20,21};
-    public static double armSpeed = 0.1;
-    public static double intakeSpeed = 1;
+    public static double armSpeed = 0.4;
+    public static double intakeSpeed = 0.5;
 
     // Controller Ports
     public static int XboxController0 = 0;

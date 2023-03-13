@@ -4,11 +4,11 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.SerialPort; 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -32,17 +32,23 @@ public class Drivetrain extends SubsystemBase {
         m_frontLeft = new CANSparkMax(Constants.left_DT_CAN[0], MotorType.kBrushless);
             m_frontLeft.restoreFactoryDefaults();
             m_frontLeft.setInverted(true); // arrrrg
+            // m_frontLeft.setIdleMode(IdleMode.kBrake);
         m_middleLeft = new CANSparkMax(Constants.left_DT_CAN[1], MotorType.kBrushless);
             m_middleLeft.restoreFactoryDefaults();
+            // m_middleLeft.setIdleMode(IdleMode.kBrake);
         m_backLeft = new CANSparkMax(Constants.left_DT_CAN[2], MotorType.kBrushless);
             m_backLeft.restoreFactoryDefaults();
+            // m_backLeft.setIdleMode(IdleMode.kBrake);
 
         m_frontRight  = new CANSparkMax(Constants.rite_DT_CAN[0], MotorType.kBrushless);
             m_frontRight.restoreFactoryDefaults();
+            // m_frontRight.setIdleMode(IdleMode.kBrake);
         m_middleRight = new CANSparkMax(Constants.rite_DT_CAN[1], MotorType.kBrushless);
             m_middleRight.restoreFactoryDefaults();
+            // m_middleRight.setIdleMode(IdleMode.kBrake);
         m_backRight = new CANSparkMax(Constants.rite_DT_CAN[2], MotorType.kBrushless);
             m_backRight.restoreFactoryDefaults();
+            // m_backRight.setIdleMode(IdleMode.kBrake);
 
 
         m_left = new MotorControllerGroup(m_frontLeft, m_middleLeft, m_backLeft);
@@ -79,17 +85,24 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void reloadDash(){
-        SmartDashboard.putNumber("Left Encoder Position", m_leftEncoder.getPosition());
-        SmartDashboard.putNumber("Left Encoder Velocity", m_leftEncoder.getVelocity());
-        SmartDashboard.putNumber("Right Encoder Position", m_rightEncoder.getPosition());
-        SmartDashboard.putNumber("Right Encoder Velocity", m_rightEncoder.getVelocity());
-        SmartDashboard.putData(ahrs);
-        
-
+        SmartDashboard.putNumber("LeftDT Encoder Position", m_leftEncoder.getPosition());
+        SmartDashboard.putNumber("LeftDT Encoder Velocity", m_leftEncoder.getVelocity());
+        SmartDashboard.putNumber("RightDT Encoder Position", m_rightEncoder.getPosition());
+        SmartDashboard.putNumber("RightDT Encoder Velocity", m_rightEncoder.getVelocity());
+        SmartDashboard.putNumber("X-AXIS", ahrs.getRoll());
     }
 
     public void calibrateAHRS() {
+        // ahrs = new AHRS(SerialPort.Port.kMXP);
+        // ahrs.reset();
+
+        System.out.println(ahrs.getPitch());
+        System.out.println(ahrs.getYaw());
+        System.out.println(ahrs.getRoll());
         ahrs.calibrate();
+    }
+
+    public void openAHRS() {
     }
     public void closeAHRS() {
         ahrs.close();
