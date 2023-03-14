@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -44,6 +46,10 @@ public class Robot extends TimedRobot {
     XboxController1 = new XboxController(Constants.XboxController1);
 
     m_drivetrain.calibrateAHRS();
+    m_arm.resetEncoder();
+
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(240, 190);
   }
 
   /**
@@ -61,12 +67,14 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     m_drivetrain.reloadDash();
+    m_arm.reloadDash();
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    m_drivetrain.closeAHRS();
+    // m_drivetrain.closeAHRS();
   }
 
   @Override
@@ -81,11 +89,15 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    m_drivetrain.calibrateAHRS();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    m_drivetrain.balance();
+  }
 
   @Override
   public void teleopInit() {
@@ -96,6 +108,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    XboxController1 = new XboxController(Constants.XboxController1);
+    m_drivetrain.calibrateAHRS();
+    
+
   }
 
   /** This function is called periodically during operator control. */
@@ -104,43 +120,35 @@ public class Robot extends TimedRobot {
     double get0LeftY = XboxController0.getLeftY();
     double get0RightY = XboxController0.getRightY();
     double get1LeftY = XboxController1.getLeftY();
-    // double get1RightY = XboxController1.getRightY();
+    double get1RightY = XboxController1.getRightY();
+    double armSpeed = Constants.armSpeed;
+    double intakeSpeed = Constants.intakeSpeed;
 
     m_drivetrain.tankDrive(get0LeftY, get0RightY);
 
-    double rightTrigger = XboxController1.getRightTriggerAxis();
-    double leftTrigger = XboxController1.getLeftTriggerAxis();
-    if(rightTrigger > 0){
-      m_arm.raise(rightTrigger);
+    // if bumpers, read bumpers, else read leftStick
+    if(XboxController1.getLeftBumper()) {
+      m_arm.raise(Constants.armSpeed);
+    } else
+    if(XboxController1.getRightBumper()) {
+      m_arm.raise(-Constants.armSpeed);
+    } else {
+      m_arm.raise(-get1LeftY * armSpeed);
     }
-    else if(leftTrigger > 0){
-      m_arm.raise(-leftTrigger);
-    }
-    if(get1LeftY != 0){
-      m_arm.intake(get1LeftY);
+
+    // UNTESTED
+    // if triggers, read triggers, else read rightStick
+    if(XboxController1.getLeftTriggerAxis() > 0) {
+      m_arm.intake(XboxController1.getLeftTriggerAxis() * Constants.intakeSpeed);
+    } else
+    if(XboxController1.getRightTriggerAxis() > 0) {
+      m_arm.intake(-XboxController1.getRightTriggerAxis() * Constants.intakeSpeed);
+    } else {
+      m_arm.intake(get1RightY * intakeSpeed);
     }
   }
-  //   // if bumpers, read bumpers, else read leftStick
-  //   if(XboxController1.getLeftBumper()) {
-  //     m_arm.raise(Constants.armSpeed);
-  //   } else
-  //   if(XboxController1.getRightBumper()) {
-  //     m_arm.raise(-Constants.armSpeed);
-  //   } else {
-  //     m_arm.raise(get1LeftY);
-  //   }
 
-  //   // UNTESTED
-  //   // if triggers, read triggers, else read rightStick
-  //   if(XboxController1.getLeftTriggerAxis() > 0) {
-  //     m_arm.intake(XboxController1.getLeftTriggerAxis());
-  //   } else
-  //   if(XboxController1.getRightTriggerAxis() > 0) {
-  //     m_arm.intake(-XboxController1.getRightTriggerAxis());
-  //   } else {
-  //     m_arm.intake(get1RightY);
-  //   }
-  // }
+
 
 
   @Override
@@ -148,6 +156,9 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     // CameraServer.startAutomaticCapture();
+
+    m_drivetrain.calibrateAHRS();
+
     }
 
   /** This function is called periodically during test mode. */
@@ -176,16 +187,6 @@ public class Robot extends TimedRobot {
       default:
         break;
     }
-    // if(XboxController0.getPOV() == 0) { //14
-    //   m_drivetrain.testMotorR1();
-    // }
-    // if(XboxController0.getPOV() == 90) { //15
-    //   m_drivetrain.testMotorR2();
-    // }
-    // if(XboxController0.getPOV() == 180) { //16
-    //   m_drivetrain.testMotorR3();  
-    // }
-
 
     if(XboxController0.getLeftBumper()) {
       m_arm.raise(Constants.armSpeed);
@@ -195,8 +196,12 @@ public class Robot extends TimedRobot {
     } else {
       m_arm.raise(0);
     }
-    m_arm.intake(XboxController0.getLeftTriggerAxis());
-    m_arm.intake(-XboxController0.getRightTriggerAxis());
+    
+    if(XboxController0.getLeftTriggerAxis() > 0) {
+      m_arm.intake(XboxController0.getLeftTriggerAxis() * Constants.intakeSpeed);
+    } else {
+      m_arm.intake(-XboxController0.getRightTriggerAxis() * Constants.intakeSpeed);
+    }
 
   }
 
