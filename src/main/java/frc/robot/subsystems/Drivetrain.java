@@ -14,13 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import edu.wpi.first.wpilibj.drive.MecanumDrive;
-// import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.Joystick;
-
-
-
-
 public class Drivetrain extends SubsystemBase {
     // set up each motor and combine into full drivetrain
     CANSparkMax m_frontLeft, m_middleLeft, m_backLeft;
@@ -33,9 +26,6 @@ public class Drivetrain extends SubsystemBase {
     private AHRS ahrs;
 
     DifferentialDrive m_drive;
-    MecanumDrive mecanumDrive;
-    // can use Xbox Controller as a joystick
-    Joystick stick = new Joystick(Constants.XboxController0);
 
     public Drivetrain() {
         m_frontLeft = new CANSparkMax(Constants.left_DT_CAN[0], MotorType.kBrushless);
@@ -61,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
 
 
         m_left = new MotorControllerGroup(m_frontLeft, m_middleLeft, m_backLeft);
-            // m_left.setInverted(true);
+            m_left.setInverted(true);
         m_right = new MotorControllerGroup(m_frontRight, m_middleRight, m_backRight);
         m_drive = new DifferentialDrive(m_left, m_right);
         
@@ -74,7 +64,6 @@ public class Drivetrain extends SubsystemBase {
         ahrs = new AHRS(SerialPort.Port.kMXP);
         ahrs.reset();
 
-        mecanumDrive = new MecanumDrive(m_frontLeft, m_backLeft, m_frontRight, m_backRight);
     }
 
     public void tankDrive(double y_left, double y_right){
@@ -101,6 +90,9 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Right Encoder Position", m_rightEncoder.getPosition());
         SmartDashboard.putNumber("Right Encoder Velocity", m_rightEncoder.getVelocity());
         SmartDashboard.putData(ahrs);
+        SmartDashboard.putNumber("Roll", ahrs.getRoll());
+        SmartDashboard.putNumber("Pitch", ahrs.getPitch());
+        SmartDashboard.putNumber("Yaw", ahrs.getYaw());
         
 
     }
@@ -125,8 +117,8 @@ public class Drivetrain extends SubsystemBase {
         //https://pdocs.kauailabs.com/navx-mxp/examples/automatic-balancing/
         double anglePitch = ahrs.getPitch();
         double angleRoll = ahrs.getRoll();
-        double xAxis = 0;
-        double yAxis = 0;
+        // double xAxis = 0;
+        // double yAxis = 0;
         // determine if modification to drive is necessary
         if(!Constants.autoBalancing && (Math.abs(anglePitch) >= Constants.angleOffThreshold)){
             Constants.autoBalancing = true;
@@ -136,10 +128,22 @@ public class Drivetrain extends SubsystemBase {
         }
         // correct by reverse driving
         if(Constants.autoBalancing){
-            xAxis = Math.sin((anglePitch * (Math.PI/180))) * -1;
-            yAxis = Math.sin((angleRoll * (Math.PI/180))) * -1;
+            // xAxis = Math.sin((anglePitch * (Math.PI/180))) * -1;
+            // yAxis = Math.sin((angleRoll * (Math.PI/180))) * -1;
+            if(anglePitch < 0){
+                m_drive.tankDrive(-1,1);
+            }
+            else if(anglePitch > 0){
+                m_drive.tankDrive(-1,1);
+            }
+            if(angleRoll < 0){
+                m_drive.tankDrive(1,1);
+            }
+            else if(angleRoll > 0){
+                m_drive.tankDrive(-1,-1);
+            }
         }
-        mecanumDrive.driveCartesian(xAxis, yAxis, stick.getTwist());
+        // mecanumDrive.driveCartesian(xAxis, yAxis, stick.getTwist());
         Timer.delay(0.005);
     }
 }
