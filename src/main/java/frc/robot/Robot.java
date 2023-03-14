@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Vision;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -96,7 +98,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    m_drivetrain.balance();
+    Vision.movePath(m_drivetrain);
+    // m_drivetrain.balance();
   }
 
   @Override
@@ -124,14 +127,23 @@ public class Robot extends TimedRobot {
     double armSpeed = Constants.armSpeed;
     double intakeSpeed = Constants.intakeSpeed;
 
+    if (XboxController0.getLeftBumper()) {
+      get0LeftY = 1;
+      get0RightY = 1;
+    }
+    if (XboxController0.getRightBumper()) {
+      get0LeftY = -1;
+      get0RightY = -1;
+    }
+
     m_drivetrain.tankDrive(get0LeftY, get0RightY);
 
     // if bumpers, read bumpers, else read leftStick
     if(XboxController1.getLeftBumper()) {
-      m_arm.raise(Constants.armSpeed);
+      m_arm.raise(armSpeed);
     } else
     if(XboxController1.getRightBumper()) {
-      m_arm.raise(-Constants.armSpeed);
+      m_arm.raise(-armSpeed);
     } else {
       m_arm.raise(-get1LeftY * armSpeed);
     }
@@ -139,10 +151,10 @@ public class Robot extends TimedRobot {
     // UNTESTED
     // if triggers, read triggers, else read rightStick
     if(XboxController1.getLeftTriggerAxis() > 0) {
-      m_arm.intake(XboxController1.getLeftTriggerAxis() * Constants.intakeSpeed);
+      m_arm.intake(XboxController1.getLeftTriggerAxis() * intakeSpeed);
     } else
     if(XboxController1.getRightTriggerAxis() > 0) {
-      m_arm.intake(-XboxController1.getRightTriggerAxis() * Constants.intakeSpeed);
+      m_arm.intake(-XboxController1.getRightTriggerAxis() * intakeSpeed);
     } else {
       m_arm.intake(get1RightY * intakeSpeed);
     }

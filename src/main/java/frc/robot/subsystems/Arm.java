@@ -17,14 +17,28 @@ public class Arm extends SubsystemBase {
     private final VictorSPX m_intake;
     private final Encoder m_Rencoder;
     private final DutyCycleEncoder m_DCencoder;
-    private final PIDController m_pid;
+    // private final PIDController m_pid;
 
     public Arm() {
         m_lifter = new VictorSPX(Constants.arm_CAN[0]);
         m_intake = new VictorSPX(Constants.arm_CAN[1]);
         m_Rencoder = new Encoder(0, 1, false, Encoder.EncodingType.k2X);
         m_DCencoder = new DutyCycleEncoder(2);
-        m_pid = new PIDController(0, 0, 0);
+        m_Rencoder.setDistancePerPulse(1./256.);
+        // m_pid = new PIDController(0, 0, 0);
+    }
+
+    //unimplemented and untested
+    public void encoderArmMoveHalfway(){
+        double maxHeightRotations = 21;
+        double minHeightRotations = 19;
+        double speed = 0.5;
+        if(m_Rencoder.getDistance() < maxHeightRotations){
+            m_lifter.set(ControlMode.PercentOutput, -speed);
+        }
+        else if(m_Rencoder.getDistance() > minHeightRotations){
+            m_lifter.set(ControlMode.PercentOutput, speed);
+        }
     }
 
     public void reloadDash() {

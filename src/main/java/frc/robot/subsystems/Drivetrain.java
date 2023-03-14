@@ -79,7 +79,7 @@ public class Drivetrain extends SubsystemBase {
             case 2:m_middleLeft.set(Constants.drivetrainPower); break;
             case 3:m_backLeft.set(Constants.drivetrainPower);   break;
             case 4:m_frontRight.set(Constants.drivetrainPower); break;
-            case 5:m_middleRight.set(Constants.drivetrainPower);break;
+            case 5:m_middleRight.set(Constants.drivetrainPower); break;
             case 6:m_backRight.set(Constants.drivetrainPower);  break;
         }
     }
@@ -97,6 +97,13 @@ public class Drivetrain extends SubsystemBase {
 
     }
 
+    public double getRightEncoder(){
+        return m_rightEncoder.getPosition();
+    }
+    public double getLeftEncoder(){
+        return m_leftEncoder.getPosition();
+    }
+
     public void calibrateAHRS() {
         // ahrs = new AHRS(SerialPort.Port.kMXP);
         // ahrs.reset();
@@ -107,12 +114,13 @@ public class Drivetrain extends SubsystemBase {
         ahrs.calibrate();
     }
 
-    public void openAHRS() {
-    }
+    // public void openAHRS() {
+    // }
     public void closeAHRS() {
         ahrs.close();
     }
 
+    //unimplemented and untested
     public void balance(){
         //https://pdocs.kauailabs.com/navx-mxp/examples/automatic-balancing/
         double anglePitch = ahrs.getPitch();

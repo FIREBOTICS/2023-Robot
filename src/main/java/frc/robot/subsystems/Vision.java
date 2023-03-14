@@ -3,21 +3,22 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 
 public class Vision extends SubsystemBase{
     
-    private double[] grabTag(){
+    private static double[] grabTag(){
         return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDoubleArray(new double[6]);
     }
-    public void movePath(){
-        // PIDController pid = new PIDController(kP, kI, kD);
+    public static void movePath(Drivetrain m_drivetrain){
+        PIDController pid = new PIDController(Constants.kP, Constants.kI, Constants.kD);
 
         double[] data = grabTag();
         // casting to an int
         switch ((int)(data[0])) {
             case 1:
-                break;
+                m_drivetrain.tankDrive((pid.calculate(m_drivetrain.getLeftEncoder(), 5)),(pid.calculate(m_drivetrain.getRightEncoder(), 5)));
             case 2:
                 break;
             case 3:
@@ -27,6 +28,10 @@ public class Vision extends SubsystemBase{
             case 5:
                 break;
             case 6:
+                break;
+            case 7:
+                break;
+            case 8:
                 break;
         }
     }
