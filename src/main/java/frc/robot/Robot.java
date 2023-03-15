@@ -160,6 +160,20 @@ public class Robot extends TimedRobot {
     } else {
       m_arm.intake(get1RightY * intakeSpeed);
     }
+
+    //temporary values for arm positions potentially - might end up removing
+    if(XboxController1.getAButton()){
+      m_arm.raise(1);
+    }
+    if(XboxController1.getBButton()){
+      m_arm.raise(2);
+    }
+    if(XboxController1.getXButton()){
+      m_arm.raise(3);
+    }
+    if(XboxController1.getYButton()){
+      m_arm.raise(4);
+    }
   }
 
 

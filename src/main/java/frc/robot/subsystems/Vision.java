@@ -17,6 +17,7 @@ public class Vision extends SubsystemBase{
         double[] data = grabTag();
         // casting to an int
         switch ((int)(data[0])) {
+            //things that need to be accounted for: turning, game element, auto-balancing, distance, other bots(?)
             case 1:
                 m_drivetrain.tankDrive((pid.calculate(m_drivetrain.getLeftEncoder(), 5)),(pid.calculate(m_drivetrain.getRightEncoder(), 5)));
             case 2:
