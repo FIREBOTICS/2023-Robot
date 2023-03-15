@@ -122,18 +122,20 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     double get0LeftY = XboxController0.getLeftY();
     double get0RightY = XboxController0.getRightY();
+    double get0LeftTrigger = XboxController0.getLeftTriggerAxis();
+    double get0RightTrigger = XboxController0.getRightTriggerAxis();
     double get1LeftY = XboxController1.getLeftY();
     double get1RightY = XboxController1.getRightY();
     double armSpeed = Constants.armSpeed;
     double intakeSpeed = Constants.intakeSpeed;
 
-    if (XboxController0.getLeftBumper()) {
-      get0LeftY = 1;
-      get0RightY = 1;
+    if (get0LeftTrigger > 0) {
+      get0LeftY = get0LeftTrigger;
+      get0RightY = get0LeftTrigger;
     }
-    if (XboxController0.getRightBumper()) {
-      get0LeftY = -1;
-      get0RightY = -1;
+    if (get0RightTrigger > 0) {
+      get0LeftY = -get0RightTrigger;
+      get0RightY = -get0RightTrigger;
     }
 
     m_drivetrain.tankDrive(get0LeftY, get0RightY);
