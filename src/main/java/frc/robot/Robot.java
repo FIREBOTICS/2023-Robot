@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -98,18 +99,30 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    m_drivetrain.tankDrive(0, 0);
+    if(m_drivetrain.getLeftEncoder() < 4.5 || -m_drivetrain.getRightEncoder() < 4.5)
+      m_drivetrain.tankDrive(-1, -1);
+
+    if(m_drivetrain.getLeftEncoder() > 5.5 || -m_drivetrain.getRightEncoder() > 5.5)
+      m_drivetrain.tankDrive(1, 1);
+
+    //PIDController pid = new PIDController(Constants.kP, Constants.kI, Constants.kD);
+
+    //m_drivetrain.tankDrive((pid.calculate(m_drivetrain.getLeftEncoder(), .0005)),(pid.calculate(m_drivetrain.getRightEncoder(), .0005)));
+
     // Vision.movePath(m_drivetrain);
     // m_drivetrain.tankDrive(1, 1);
     // m_drivetrain.tankDrive(0,0);
     // m_drivetrain.balance();
-    double[] DrivetrainEncoderPositions = m_drivetrain.getEncoderPositions();
-    double leftSide = 0.2;
-    double rightSide = 0.2;
+    // double[] DrivetrainEncoderPositions = m_drivetrain.getEncoderPositions();
+    // double leftSide = 0.2;
+    // double rightSide = 0.2;
     // if (DrivetrainEncoderPositions[0] < 1 && DrivetrainEncoderPositions[1] > -1) {
     //   m_drivetrain.tankDrive(leftSide, rightSide);
     // } else m_drivetrain.tankDrive(0, 0);
   }
 
+  
   @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
@@ -120,8 +133,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     XboxController1 = new XboxController(Constants.XboxController1);
-    m_drivetrain.calibrateAHRS();
-    
+    m_drivetrain.calibrateAHRS();    
 
   }
 
@@ -136,6 +148,7 @@ public class Robot extends TimedRobot {
     double get1RightY = XboxController1.getRightY();
     double armSpeed = Constants.armSpeed;
     double intakeSpeed = Constants.intakeSpeed;
+    //double encoderValueStart = 0;
     int armCommand = 0;
 
     if (get0LeftTrigger > 0) {
@@ -160,24 +173,26 @@ public class Robot extends TimedRobot {
     } else
     if (XboxController1.getAButton()) {
       armCommand = 52; //grid
-      if (m_arm.getEncoder() < 0.52) m_arm.raise(0.2);
-      if (m_arm.getEncoder() > 0.52) m_arm.raise(-0.2);
+      if      (m_arm.getEncoder() < 0.52) m_arm.raise(armSpeed);
+      else if (m_arm.getEncoder() > 0.56) m_arm.raise(-0.4);
+      else if (m_arm.getEncoder() > 0.52) m_arm.raise(-0.3);
+      else m_arm.raise(0.1);
     } else
     if (XboxController1.getBButton()) {
       armCommand = 62; //shelf load
-      if (m_arm.getEncoder() < 0.62) m_arm.raise(0.2);
-      if (m_arm.getEncoder() > 0.62) m_arm.raise(-0.2);
+      if      (m_arm.getEncoder() < 0.45) m_arm.raise(armSpeed);
+      else if (m_arm.getEncoder() < 0.60) m_arm.raise(0.4);
+      else if (m_arm.getEncoder() > 0.66) m_arm.raise(-0.4);
+      else if (m_arm.getEncoder() > 0.62) m_arm.raise(-0.3);
+      else m_arm.raise(0);
     } else
     if (XboxController1.getXButton()) {
-      armCommand = 33; //cube
-      if (m_arm.getEncoder() < 0.33) m_arm.raise(0.2);
-      if (m_arm.getEncoder() > 0.33) m_arm.raise(-armSpeed);
-    } else
-    if (XboxController1.getYButton()) {
       armCommand = 36; //cone
-      // if (m_arm.getEncoder() < 0.36) m_arm.raise(armSpeed);
-      if (m_arm.getEncoder() > 0.36) m_arm.raise(-armSpeed);
-    } else {
+      if      (m_arm.getEncoder() < 0.36) m_arm.raise(armSpeed);
+      else if (m_arm.getEncoder() > 0.36) m_arm.raise(-armSpeed);
+      else m_arm.raise(0.1);
+    } else
+    {
       m_arm.raise(-get1LeftY * armSpeed);
     }
     // else m_arm.raise(0.0d); //d converts to double
@@ -192,7 +207,20 @@ public class Robot extends TimedRobot {
     } else {
       m_arm.intake(get1RightY * intakeSpeed);
     }
-
+    
+    //dont fall from gravity
+    //if(XboxController0.getAButtonPressed()){
+      // if(Constants.ft == true){
+      //     encoderValueStart = m_arm.getEncoder();
+      //     Constants.ft = false;
+      // }
+      // if(XboxController1.getLeftTriggerAxis() == 0){
+      //   if(m_arm.getEncoder() - encoderValueStart != 0){// && 0 > m_arm.getEncoder() - encoderValueStart && m_arm.getEncoder() - encoderValueStart > 0.4){
+      //     m_arm.raise((m_arm.getEncoder() - encoderValueStart));
+      //   }
+      //   encoderValueStart = m_arm.getEncoder();
+      // }
+    //}
     /*
     //temporary values for arm positions potentially - might end up removing
     if(XboxController1.getAButton()){

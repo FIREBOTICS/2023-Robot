@@ -75,6 +75,7 @@ public class Drivetrain extends SubsystemBase {
         m_drive.tankDrive(y_left, y_right);
     }
 
+    
     public void driveDistance(double distance, double speed) {
         
     }
@@ -116,9 +117,6 @@ public class Drivetrain extends SubsystemBase {
         // ahrs = new AHRS(SerialPort.Port.kMXP);
         // ahrs.reset();
 
-        System.out.println(ahrs.getPitch());
-        System.out.println(ahrs.getYaw());
-        System.out.println(ahrs.getRoll());
         ahrs.calibrate();
     }
 

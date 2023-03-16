@@ -4,10 +4,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Drivetrain;
+// import frc.robot.subsystems.Drivetrain;
 
 public class Vision extends SubsystemBase{
     
@@ -21,16 +22,18 @@ public class Vision extends SubsystemBase{
     
     public static void movePath(Drivetrain m_drivetrain){
         
-        // PIDController pid = new PIDController(Constants.kP, Constants.kI, Constants.kD);
-
+        PIDController pid = new PIDController(Constants.kP, Constants.kI, Constants.kD);
+        double data = getTag();
         // System.out.println("hi");
-        // System.out.println(data[1]);
-
+        System.out.println(data);
+        System.out.println((int)(data));
         // // casting to an int
-        // switch ((int)(data[0])) {
-        //     //things that need to be accounted for: turning, game element, auto-balancing, distance, other bots(?)
+        m_drivetrain.tankDrive((pid.calculate(m_drivetrain.getLeftEncoder(), 500)),(pid.calculate(m_drivetrain.getRightEncoder(), 500)));
+        // switch ((int)(data)) {
+        //     // things that need to be accounted for: turning, game element, auto-balancing, distance, other bots(?)
         //     case 1:
         //         m_drivetrain.tankDrive((pid.calculate(m_drivetrain.getLeftEncoder(), 5)),(pid.calculate(m_drivetrain.getRightEncoder(), 5)));
+        //         break;
         //     case 2:
         //         break;
         //     case 3:

@@ -49,6 +49,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void raise(double speed) {
+        if (getEncoder() < 0.34 && speed < 0) return;
         m_lifter.set(ControlMode.PercentOutput, speed);
     }
 
