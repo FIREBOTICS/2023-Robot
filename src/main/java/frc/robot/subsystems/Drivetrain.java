@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -26,6 +27,7 @@ public class Drivetrain extends SubsystemBase {
     private AHRS ahrs;
 
     DifferentialDrive m_drive;
+    PIDController m_pid;
 
     public Drivetrain() {
         m_frontLeft = new CANSparkMax(Constants.left_DT_CAN[0], MotorType.kBrushless);
@@ -73,6 +75,10 @@ public class Drivetrain extends SubsystemBase {
         m_drive.tankDrive(y_left, y_right);
     }
 
+    public void driveDistance(double distance, double speed) {
+        
+    }
+
     public void testMotor(int motor) {
         switch (motor) {
             case 1:m_frontLeft.set(Constants.drivetrainPower);  break;
@@ -84,17 +90,19 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    public double[] getEncoderPositions() {
+        double[] positions = {m_leftEncoder.getPosition(), m_rightEncoder.getPosition()};
+        return positions;
+    }
+
     public void reloadDash(){
         SmartDashboard.putNumber("Left Encoder Position", m_leftEncoder.getPosition());
         SmartDashboard.putNumber("Left Encoder Velocity", m_leftEncoder.getVelocity());
         SmartDashboard.putNumber("Right Encoder Position", m_rightEncoder.getPosition());
         SmartDashboard.putNumber("Right Encoder Velocity", m_rightEncoder.getVelocity());
-        SmartDashboard.putData(ahrs);
         SmartDashboard.putNumber("Roll", ahrs.getRoll());
         SmartDashboard.putNumber("Pitch", ahrs.getPitch());
         SmartDashboard.putNumber("Yaw", ahrs.getYaw());
-        
-
     }
 
     public double getRightEncoder(){

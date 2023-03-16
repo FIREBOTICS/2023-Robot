@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    // m_drivetrain.closeAHRS();
+      // m_drivetrain.closeAHRS();
   }
 
   @Override
@@ -98,8 +98,16 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    Vision.movePath(m_drivetrain);
+    // Vision.movePath(m_drivetrain);
+    // m_drivetrain.tankDrive(1, 1);
+    // m_drivetrain.tankDrive(0,0);
     // m_drivetrain.balance();
+    double[] DrivetrainEncoderPositions = m_drivetrain.getEncoderPositions();
+    double leftSide = 0.2;
+    double rightSide = 0.2;
+    // if (DrivetrainEncoderPositions[0] < 1 && DrivetrainEncoderPositions[1] > -1) {
+    //   m_drivetrain.tankDrive(leftSide, rightSide);
+    // } else m_drivetrain.tankDrive(0, 0);
   }
 
   @Override
@@ -128,6 +136,7 @@ public class Robot extends TimedRobot {
     double get1RightY = XboxController1.getRightY();
     double armSpeed = Constants.armSpeed;
     double intakeSpeed = Constants.intakeSpeed;
+    int armCommand = 0;
 
     if (get0LeftTrigger > 0) {
       get0LeftY = get0LeftTrigger;
@@ -142,14 +151,37 @@ public class Robot extends TimedRobot {
 
     // if bumpers, read bumpers, else read leftStick
     if(XboxController1.getLeftBumper()) {
+      armCommand = 0;
       m_arm.raise(armSpeed);
     } else
     if(XboxController1.getRightBumper()) {
+      armCommand = 0;
       m_arm.raise(-armSpeed);
+    } else
+    if (XboxController1.getAButton()) {
+      armCommand = 52; //grid
+      if (m_arm.getEncoder() < 0.52) m_arm.raise(0.2);
+      if (m_arm.getEncoder() > 0.52) m_arm.raise(-0.2);
+    } else
+    if (XboxController1.getBButton()) {
+      armCommand = 62; //shelf load
+      if (m_arm.getEncoder() < 0.62) m_arm.raise(0.2);
+      if (m_arm.getEncoder() > 0.62) m_arm.raise(-0.2);
+    } else
+    if (XboxController1.getXButton()) {
+      armCommand = 33; //cube
+      if (m_arm.getEncoder() < 0.33) m_arm.raise(0.2);
+      if (m_arm.getEncoder() > 0.33) m_arm.raise(-armSpeed);
+    } else
+    if (XboxController1.getYButton()) {
+      armCommand = 36; //cone
+      // if (m_arm.getEncoder() < 0.36) m_arm.raise(armSpeed);
+      if (m_arm.getEncoder() > 0.36) m_arm.raise(-armSpeed);
     } else {
       m_arm.raise(-get1LeftY * armSpeed);
     }
-
+    // else m_arm.raise(0.0d); //d converts to double
+    
     // UNTESTED
     // if triggers, read triggers, else read rightStick
     if(XboxController1.getLeftTriggerAxis() > 0) {
@@ -161,6 +193,7 @@ public class Robot extends TimedRobot {
       m_arm.intake(get1RightY * intakeSpeed);
     }
 
+    /*
     //temporary values for arm positions potentially - might end up removing
     if(XboxController1.getAButton()){
       m_arm.raise(1);
@@ -174,6 +207,7 @@ public class Robot extends TimedRobot {
     if(XboxController1.getYButton()){
       m_arm.raise(4);
     }
+    */
   }
 
 
