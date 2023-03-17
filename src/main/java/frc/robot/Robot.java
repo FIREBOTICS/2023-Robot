@@ -152,6 +152,16 @@ public class Robot extends TimedRobot {
       m_drivetrain.tankDrive(1,-1);
     }
 
+    //Move Around 16 Feet Forward
+    //Put Arm to 36 or 35 Preset
+    //Run Cube Intake (Negative)
+    //While Cube Intake Is Still Running Move Forward 3 Feet
+    //Move Arm Preset to 75
+    //Flip Robot 180
+
+
+  
+
 
     
 
@@ -159,17 +169,7 @@ public class Robot extends TimedRobot {
 
     //m_drivetrain.tankDrive((pid.calculate(m_drivetrain.getLeftEncoder(), .0005)),(pid.calculate(m_drivetrain.getRightEncoder(), .0005)));
 
-    // Vision.movePath(m_drivetrain);
-    // m_drivetrain.tankDrive(1, 1);
-    // m_drivetrain.tankDrive(0,0);
-    // m_drivetrain.balance();
-    // double[] DrivetrainEncoderPositions = m_drivetrain.getEncoderPositions();
-    // double leftSide = 0.2;
-    // double rightSide = 0.2;
-    // if (DrivetrainEncoderPositions[0] < 1 && DrivetrainEncoderPositions[1] > -1) {
-    //   m_drivetrain.tankDrive(leftSide, rightSide);
-    // } else m_drivetrain.tankDrive(0, 0);
-
+    
     Timer.delay(15);
     m_drivetrain.tankDrive(0, 0);
   }
