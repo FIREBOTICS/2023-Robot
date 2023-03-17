@@ -33,24 +33,19 @@ public class Drivetrain extends SubsystemBase {
         m_frontLeft = new CANSparkMax(Constants.left_DT_CAN[0], MotorType.kBrushless);
             m_frontLeft.restoreFactoryDefaults();
             m_frontLeft.setInverted(true); // arrrrg
-            // m_frontLeft.setIdleMode(IdleMode.kBrake);
         m_middleLeft = new CANSparkMax(Constants.left_DT_CAN[1], MotorType.kBrushless);
             m_middleLeft.restoreFactoryDefaults();
-            // m_middleLeft.setIdleMode(IdleMode.kBrake);
         m_backLeft = new CANSparkMax(Constants.left_DT_CAN[2], MotorType.kBrushless);
             m_backLeft.restoreFactoryDefaults();
-            // m_backLeft.setIdleMode(IdleMode.kBrake);
 
         m_frontRight  = new CANSparkMax(Constants.rite_DT_CAN[0], MotorType.kBrushless);
             m_frontRight.restoreFactoryDefaults();
-            // m_frontRight.setIdleMode(IdleMode.kBrake);
         m_middleRight = new CANSparkMax(Constants.rite_DT_CAN[1], MotorType.kBrushless);
             m_middleRight.restoreFactoryDefaults();
-            // m_middleRight.setIdleMode(IdleMode.kBrake);
         m_backRight = new CANSparkMax(Constants.rite_DT_CAN[2], MotorType.kBrushless);
             m_backRight.restoreFactoryDefaults();
-            // m_backRight.setIdleMode(IdleMode.kBrake);
 
+        setBrakeMode(false);
 
         m_left = new MotorControllerGroup(m_frontLeft, m_middleLeft, m_backLeft);
             m_left.setInverted(true);
@@ -75,9 +70,23 @@ public class Drivetrain extends SubsystemBase {
         m_drive.tankDrive(y_left, y_right);
     }
 
-    
-    public void driveDistance(double distance, double speed) {
-        
+    public boolean setBrakeMode(boolean brakeMode) {
+        if (brakeMode == true) {
+            m_frontLeft.setIdleMode(IdleMode.kBrake);
+            m_middleLeft.setIdleMode(IdleMode.kBrake);
+            m_backLeft.setIdleMode(IdleMode.kBrake);
+            m_frontRight.setIdleMode(IdleMode.kBrake);
+            m_middleRight.setIdleMode(IdleMode.kBrake);
+            m_backRight.setIdleMode(IdleMode.kBrake);
+        } else {
+            m_frontLeft.setIdleMode(IdleMode.kCoast);
+            m_middleLeft.setIdleMode(IdleMode.kCoast);
+            m_backLeft.setIdleMode(IdleMode.kCoast);
+            m_frontRight.setIdleMode(IdleMode.kCoast);
+            m_middleRight.setIdleMode(IdleMode.kCoast);
+            m_backRight.setIdleMode(IdleMode.kCoast);
+        }
+        return brakeMode;
     }
 
     public void testMotor(int motor) {
@@ -113,10 +122,11 @@ public class Drivetrain extends SubsystemBase {
         return m_leftEncoder.getPosition();
     }
 
+    public void resetEncoders() {
+        m_leftEncoder.setPosition(0);
+        m_rightEncoder.setPosition(0);
+    }
     public void calibrateAHRS() {
-        // ahrs = new AHRS(SerialPort.Port.kMXP);
-        // ahrs.reset();
-
         ahrs.calibrate();
     }
 
