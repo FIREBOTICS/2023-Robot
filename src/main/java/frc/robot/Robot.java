@@ -103,74 +103,101 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     m_drivetrain.resetEncoders();
-    m_drivetrain.reloadDash();
-    Timer.delay(0.1);
+    //m_drivetrain.reloadDash();
+    //Timer.delay(0.1);
 
-            //drivetrain - speed of left side, speed of right side
-    m_drivetrain.tankDrive(0, 0);
-    while (true){
-      while(m_drivetrain.getLeftEncoder() < 4.5 && -m_drivetrain.getRightEncoder() < 4.5){
-        m_drivetrain.tankDrive(-1,-1);
-      }
-      m_drivetrain.tankDrive(0, 0);
-      while(m_drivetrain.getLeftEncoder() > 5.5 && -m_drivetrain.getRightEncoder() > 5.5){
-        m_drivetrain.tankDrive(1,1);
-      }
-      m_drivetrain.tankDrive(0, 0);
+    
+    // m_drivetrain.tankDrive(0, 0);
+    // while (true){
+    //   while(m_drivetrain.getLeftEncoder() < 4.5 && -m_drivetrain.getRightEncoder() < 4.5){
+    //     m_drivetrain.tankDrive(-1,-1);
+    //   }
+    //   m_drivetrain.tankDrive(0, 0);
+    //   while(m_drivetrain.getLeftEncoder() > 5.5 && -m_drivetrain.getRightEncoder() > 5.5){
+    //     m_drivetrain.tankDrive(1,1);
+    //   }
+    //   m_drivetrain.tankDrive(0, 0);
 
-      Timer.delay(0.5);
-      System.out.println(m_drivetrain.getLeftEncoder());
-      System.out.println(m_drivetrain.getRightEncoder());
+    //   Timer.delay(0.5);
+    //   System.out.println(m_drivetrain.getLeftEncoder());
+    //   System.out.println(m_drivetrain.getRightEncoder());
 
-      if((m_drivetrain.getLeftEncoder() > 4.5 && m_drivetrain.getLeftEncoder() < 5.5) && 
-      (-m_drivetrain.getRightEncoder() > 4.5 && -m_drivetrain.getRightEncoder() < 5.5)){
-        break;
-      }
-      Timer.delay(1);
-    }
+    //   if((m_drivetrain.getLeftEncoder() > 4.5 && m_drivetrain.getLeftEncoder() < 5.5) && 
+    //   (-m_drivetrain.getRightEncoder() > 4.5 && -m_drivetrain.getRightEncoder() < 5.5)){
+    //     break;
+    //   }
+    //   Timer.delay(1);
+    // }
       //preset arm control down 52
     double armSpeed = Constants.armSpeed;
     while (m_arm.getEncoder() > 0.52) m_arm.raise(-0.3);
     m_arm.raise(0.1);
-
+      //Outtakes Cone For 1.5 Seconds
     m_arm.intake(-Constants.intakeSpeed);
-    Timer.delay(3);
+    Timer.delay(1.5);
     m_arm.intake(0);
     
-
+      //Move Arm To Starting Location
     while(m_arm.getEncoder() < 0.75) m_arm.raise(armSpeed);
     m_arm.raise(0);
 
+      //Turn Off BrakeMode
     m_drivetrain.setBrakeMode(false);
-
+      
+      //Move DriveTrain Back 1.5 Seconds
     m_drivetrain.tankDrive(1,1);
-    Timer.delay(2);
+    Timer.delay(1.5);
+
+      //Maybe Get Rid Of This
     m_drivetrain.tankDrive(0,0);
     m_drivetrain.resetEncoders();
-
+      
+      //Flip Robot 180
     while(m_drivetrain.getLeftEncoder() < 9 && -m_drivetrain.getRightEncoder() < 9){
       m_drivetrain.tankDrive(1,-1);
     }
 
     //Move Around 16 Feet Forward
+    m_drivetrain.tankDrive(-1,-1);
+    Timer.delay(3);
+
     //Put Arm to 36 or 35 Preset
-    //Run Cube Intake (Negative)
-    //While Cube Intake Is Still Running Move Forward 3 Feet
-    //Move Arm Preset to 75
-    //Flip Robot 180
+    while (m_arm.getEncoder() > 0.36) m_arm.raise(-0.3);
+    m_arm.raise(0);
+
+    //Move Forward For 4 Seconds
+    Timer.delay(4);
+
+    //Turn on Cube Intake
+    m_arm.intake(-Constants.intakeSpeed);
+
+    //Turn off Cube Intake
+    m_arm.intake(0);
+
+    //Stop Robot
+    m_drivetrain.tankDrive(0,0);
+
+    //Reset Encoders
+    m_drivetrain.resetEncoders();
+
+    //Move Arm to 54
+    while(m_arm.getEncoder() < 0.54) m_arm.raise(armSpeed);
+    m_arm.raise(0.1);
+
+    //Flip 180
+    while(m_drivetrain.getLeftEncoder() < 9 && -m_drivetrain.getRightEncoder() < 9){
+      m_drivetrain.tankDrive(1,-1);
+    }
 
 
-  
-
-
-    
-
+      //Pit Security
     //PIDController pid = new PIDController(Constants.kP, Constants.kI, Constants.kD);
-
     //m_drivetrain.tankDrive((pid.calculate(m_drivetrain.getLeftEncoder(), .0005)),(pid.calculate(m_drivetrain.getRightEncoder(), .0005)));
 
-    
+    //So It Does Not Reset
     Timer.delay(15);
+
+    //Turn off Robot
     m_drivetrain.tankDrive(0, 0);
   }
 
