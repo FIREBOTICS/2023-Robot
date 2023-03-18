@@ -7,6 +7,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -28,6 +29,9 @@ public class Drivetrain extends SubsystemBase {
 
     DifferentialDrive m_drive;
     PIDController m_pid;
+    SlewRateLimiter filter;
+
+    boolean isBrakeMode;
 
     public Drivetrain() {
         m_frontLeft = new CANSparkMax(Constants.left_DT_CAN[0], MotorType.kBrushless);
@@ -61,15 +65,24 @@ public class Drivetrain extends SubsystemBase {
         ahrs = new AHRS(SerialPort.Port.kMXP);
         ahrs.reset();
 
+        filter = new SlewRateLimiter(5);
+
     }
 
     public void tankDrive(double y_left, double y_right){
+        // y_left = filter.calculate(y_left);
+        // y_right = filter.calculate(y_right);
         //square values while maintaining sign
+        //----
         y_left  *= Math.abs(y_left)  * Constants.drivetrainPower;
         y_right *= Math.abs(y_right) * Constants.drivetrainPower;
         m_drive.tankDrive(y_left, y_right);
     }
 
+    public boolean toggleBrakeMode() {
+        setBrakeMode(!isBrakeMode);
+        return !isBrakeMode;
+    }
     public boolean setBrakeMode(boolean brakeMode) {
         if (brakeMode == true) {
             m_frontLeft.setIdleMode(IdleMode.kBrake);
@@ -78,6 +91,7 @@ public class Drivetrain extends SubsystemBase {
             m_frontRight.setIdleMode(IdleMode.kBrake);
             m_middleRight.setIdleMode(IdleMode.kBrake);
             m_backRight.setIdleMode(IdleMode.kBrake);
+            isBrakeMode = true;
         } else {
             m_frontLeft.setIdleMode(IdleMode.kCoast);
             m_middleLeft.setIdleMode(IdleMode.kCoast);
@@ -85,8 +99,14 @@ public class Drivetrain extends SubsystemBase {
             m_frontRight.setIdleMode(IdleMode.kCoast);
             m_middleRight.setIdleMode(IdleMode.kCoast);
             m_backRight.setIdleMode(IdleMode.kCoast);
+            isBrakeMode = false;
         }
         return brakeMode;
+    }
+
+    public boolean setMotorSafety(boolean safety) {
+        m_drive.setSafetyEnabled(safety);
+        return safety;
     }
 
     public void testMotor(int motor) {
@@ -110,9 +130,10 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Left Encoder Velocity", m_leftEncoder.getVelocity());
         SmartDashboard.putNumber("Right Encoder Position", m_rightEncoder.getPosition());
         SmartDashboard.putNumber("Right Encoder Velocity", m_rightEncoder.getVelocity());
-        SmartDashboard.putNumber("Roll", ahrs.getRoll());
-        SmartDashboard.putNumber("Pitch", ahrs.getPitch());
-        SmartDashboard.putNumber("Yaw", ahrs.getYaw());
+        SmartDashboard.putBoolean("DT Brake Mode", isBrakeMode);
+        // SmartDashboard.putNumber("Roll", ahrs.getRoll());
+        // SmartDashboard.putNumber("Pitch", ahrs.getPitch());
+        // SmartDashboard.putNumber("Yaw", ahrs.getYaw());
     }
 
     public double getRightEncoder(){

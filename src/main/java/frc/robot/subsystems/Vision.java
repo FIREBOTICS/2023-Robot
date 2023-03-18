@@ -16,9 +16,9 @@ public class Vision extends SubsystemBase{
         return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0);
     }
 
-    public void reloadDash() {
-        SmartDashboard.putNumber("AprilTag seen", getTag());
-    }
+    // public void reloadDash() {
+    //     SmartDashboard.putNumber("AprilTag seen", getTag());
+    // }
     
     public static void movePath(Drivetrain m_drivetrain){
         

@@ -16,7 +16,8 @@ public final class Constants {
     // Drivetrain
     public static int[] left_DT_CAN = {11,12,13};
     public static int[] rite_DT_CAN = {14,15,16};
-    public static double drivetrainPower = 0.5;
+    public static double drivetrainPower = 0.5;//.5
+    public static double driverPower = 1.04;
 
     // Auto-Balancing
     public static final double angleOffThreshold = 10;

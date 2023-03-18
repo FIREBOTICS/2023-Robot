@@ -7,9 +7,12 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Arm;
@@ -34,6 +37,9 @@ public class Robot extends TimedRobot {
   private XboxController XboxController0;
   private XboxController XboxController1;
 
+  private int startingPosition;
+  private PIDController pid;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -51,6 +57,7 @@ public class Robot extends TimedRobot {
 
     m_drivetrain.calibrateAHRS();
     m_arm.resetEncoder();
+    pid = new PIDController(Constants.kP, Constants.kI, Constants.kD);
 
     UsbCamera camera = CameraServer.startAutomaticCapture();
     camera.setResolution(240, 190);
@@ -96,17 +103,19 @@ public class Robot extends TimedRobot {
 
     m_drivetrain.calibrateAHRS();
     m_drivetrain.setBrakeMode(true);
+    m_drivetrain.setMotorSafety(false);
     m_drivetrain.resetEncoders();
-  }
 
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {
+    if (NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("StationNumber").getInteger(0) == 2) startingPosition = 2;
+    else if (NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("StationNumber").getInteger(0) == 1) startingPosition = 1;
+    else startingPosition = 3;
+    int[][] rotateSpeeds = {{1,-1},{1,-1},{-1,1}};
+
+
     m_drivetrain.resetEncoders();
     //m_drivetrain.reloadDash();
     //Timer.delay(0.1);
 
-    
     // m_drivetrain.tankDrive(0, 0);
     // while (true){
     //   while(m_drivetrain.getLeftEncoder() < 4.5 && -m_drivetrain.getRightEncoder() < 4.5){
@@ -128,78 +137,93 @@ public class Robot extends TimedRobot {
     //   }
     //   Timer.delay(1);
     // }
-      //preset arm control down 52
+
+    //preset arm control down 52
     double armSpeed = Constants.armSpeed;
     while (m_arm.getEncoder() > 0.52) m_arm.raise(-0.3);
     m_arm.raise(0.1);
-      //Outtakes Cone For 1.5 Seconds
+
+    //Outtakes Cone For 1.5 Seconds
     m_arm.intake(-Constants.intakeSpeed);
-    Timer.delay(1.5);
+    Timer.delay(0.5);
     m_arm.intake(0);
+    // SmartDashboard.getBoolean(null, isAutonomous());
     
-      //Move Arm To Starting Location
+    // if (startingPosition )
+
+    //Move Arm To Starting Location
     while(m_arm.getEncoder() < 0.75) m_arm.raise(armSpeed);
     m_arm.raise(0);
 
-      //Turn Off BrakeMode
-    m_drivetrain.setBrakeMode(false);
-      
-      //Move DriveTrain Back 1.5 Seconds
-    m_drivetrain.tankDrive(1,1);
-    Timer.delay(1.5);
+    m_drivetrain.tankDrive(1, 1);
+    Timer.delay(0.5);
+    if (startingPosition == 2) Timer.delay(0.5);
+    m_drivetrain.tankDrive(0, 0);
 
-      //Maybe Get Rid Of This
-    m_drivetrain.tankDrive(0,0);
-    m_drivetrain.resetEncoders();
-      
-      //Flip Robot 180
-    while(m_drivetrain.getLeftEncoder() < 9 && -m_drivetrain.getRightEncoder() < 9){
-      m_drivetrain.tankDrive(1,-1);
+    //Turn Off BrakeMode
+    m_drivetrain.setBrakeMode(false);
+
+    // m_drivetrain.resetEncoders();
+    
+    if(startingPosition == 2) {
+    //   //Rotate Robot 90
+    //   while(m_drivetrain.getLeftEncoder() < 6 && -m_drivetrain.getRightEncoder() < 6){
+    //     m_drivetrain.tankDrive(1,-1);
+    //   }
+    //   m_drivetrain.tankDrive(0, 0);
+    } else {
+      m_drivetrain.resetEncoders();
+      //Rotate Robot 180
+      double count = 1.16;
+      m_drivetrain.tankDrive(rotateSpeeds[startingPosition-1][0],rotateSpeeds[startingPosition-1][1]);
+      Timer.delay(count);
+      m_drivetrain.tankDrive(0, 0);
     }
 
-    //Move Around 16 Feet Forward
-    m_drivetrain.tankDrive(-1,-1);
-    Timer.delay(3);
-
-    //Put Arm to 36 or 35 Preset
-    while (m_arm.getEncoder() > 0.36) m_arm.raise(-0.3);
+    m_arm.raise(-armSpeed);
+    Timer.delay(2);
     m_arm.raise(0);
 
-    //Move Forward For 4 Seconds
-    Timer.delay(4);
 
-    //Turn on Cube Intake
-    m_arm.intake(-Constants.intakeSpeed);
-
-    //Turn off Cube Intake
-    m_arm.intake(0);
-
-    //Stop Robot
-    m_drivetrain.tankDrive(0,0);
-
-    //Reset Encoders
-    m_drivetrain.resetEncoders();
-
-    //Move Arm to 54
-    while(m_arm.getEncoder() < 0.54) m_arm.raise(armSpeed);
-    m_arm.raise(0.1);
-
-    //Flip 180
-    while(m_drivetrain.getLeftEncoder() < 9 && -m_drivetrain.getRightEncoder() < 9){
-      m_drivetrain.tankDrive(1,-1);
-    }
+    if (startingPosition == 2) m_drivetrain.tankDrive(1, 1);
+    else m_drivetrain.tankDrive(-1,-1);
 
 
-      //Pit Security
-    //PIDController pid = new PIDController(Constants.kP, Constants.kI, Constants.kD);
-    //m_drivetrain.tankDrive((pid.calculate(m_drivetrain.getLeftEncoder(), .0005)),(pid.calculate(m_drivetrain.getRightEncoder(), .0005)));
+    // //Put Arm to 36 or 35 Preset
+    // while (m_arm.getEncoder() > 0.36) m_arm.raise(-0.4);
+    // m_arm.raise(0);
 
-    //So It Does Not Reset
-    Timer.delay(15);
+    // //Turn on Cube Intake
+    // m_arm.intake(-Constants.intakeSpeed);
 
-    //Turn off Robot
+    if (startingPosition == 2) m_drivetrain.setBrakeMode(true);
+    else Timer.delay(0.5);
+    Timer.delay(2.5);
+
+
+    // //Turn off Cube Intake
+    // m_arm.intake(0);
+
+
+    // // //Move Arm to 54
+    // // while(m_arm.getEncoder() < 0.54) m_arm.raise(armSpeed);
+    // // m_arm.raise(0.1);
+
+    // //Reset Encoders
+    // m_drivetrain.resetEncoders();
+
+    // // //Flip 180
+    // // while(m_drivetrain.getLeftEncoder() < 9 && -m_drivetrain.getRightEncoder() < 9){
+    // //   m_drivetrain.tankDrive(1,-1);
+    // // }
+
+    // //Turn off Robot
     m_drivetrain.tankDrive(0, 0);
   }
+
+  /** This function is called periodically during autonomous. */
+  @Override
+  public void autonomousPeriodic() {}
 
   
   @Override
@@ -215,6 +239,7 @@ public class Robot extends TimedRobot {
     
     m_drivetrain.calibrateAHRS();
     m_drivetrain.setBrakeMode(false);
+    m_drivetrain.setMotorSafety(true);
   }
 
   /** This function is called periodically during operator control. */
@@ -228,7 +253,8 @@ public class Robot extends TimedRobot {
     double get1RightY = XboxController1.getRightY();
     double armSpeed = Constants.armSpeed;
     double intakeSpeed = Constants.intakeSpeed;
-    //double encoderValueStart = 0;
+
+    if (XboxController0.getXButton()) m_drivetrain.toggleBrakeMode();
 
     if (get0LeftTrigger > 0) {
       get0LeftY = get0LeftTrigger;
@@ -239,7 +265,8 @@ public class Robot extends TimedRobot {
       get0RightY = -get0RightTrigger;
     }
 
-    m_drivetrain.tankDrive(get0LeftY, get0RightY);
+    m_drivetrain.tankDrive(get0LeftY * Constants.driverPower,
+                          get0RightY * Constants.driverPower);
 
     // if bumpers, read bumpers, else read leftStick
     if(XboxController1.getLeftBumper()) {
@@ -255,16 +282,15 @@ public class Robot extends TimedRobot {
       else m_arm.raise(0.1);
     } else
     if (XboxController1.getBButton()) { //shelf load
-      if      (m_arm.getEncoder() < 0.45) m_arm.raise(armSpeed);
-      else if (m_arm.getEncoder() < 0.60) m_arm.raise(0.4);
-      else if (m_arm.getEncoder() > 0.66) m_arm.raise(-0.4);
-      else if (m_arm.getEncoder() > 0.62) m_arm.raise(-0.3);
+      if      (m_arm.getEncoder() < 0.49) m_arm.raise(armSpeed);
+      else if (m_arm.getEncoder() < 0.64) m_arm.raise(0.4);
+      else if (m_arm.getEncoder() > 0.70) m_arm.raise(-0.4);
+      else if (m_arm.getEncoder() > 0.66) m_arm.raise(-0.3);
       else m_arm.raise(0);
     } else
     if (XboxController1.getXButton()) { //cone
-      if      (m_arm.getEncoder() < 0.36) m_arm.raise(armSpeed);
-      else if (m_arm.getEncoder() > 0.36) m_arm.raise(-armSpeed);
-      else m_arm.raise(0.1);
+      if (m_arm.getEncoder() > 0.36) m_arm.raise(-armSpeed);
+      else m_arm.raise(0);
     } else
     {
       m_arm.raise(-get1LeftY * armSpeed);
@@ -332,8 +358,14 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     double getLeftY = XboxController0.getLeftY();
     double getRightY = XboxController0.getRightY();
+    // double left = pid.calculate(previousLeft, getLeftY);
+    // double right = 
+    //double previousLeft = left;
 
-    m_drivetrain.tankDrive(getLeftY, getRightY);
+
+
+    m_drivetrain.tankDrive(getLeftY * Constants.driverPower,
+                           getRightY * Constants.driverPower);
 
     if(XboxController0.getXButton()) { //11
       m_drivetrain.testMotor(1);
