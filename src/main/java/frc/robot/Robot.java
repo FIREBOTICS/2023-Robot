@@ -19,17 +19,18 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
-
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
  * project.
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
-
 
   private Drivetrain m_drivetrain;
   private Arm m_arm;
@@ -40,14 +41,15 @@ public class Robot extends TimedRobot {
   private int startingPosition;
   private PIDController pid;
 
-
   /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code. 
+   * This function is run when the robot is first started up and should be used
+   * for any
+   * initialization code.
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     m_drivetrain = new Drivetrain();
@@ -64,17 +66,23 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+   * This function is called every 20 ms, no matter the mode. Use this for items
+   * like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and
    * SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled
+    // commands, running already-scheduled commands, removing finished or
+    // interrupted commands,
+    // and running subsystem periodic() methods. This must be called from the
+    // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     m_drivetrain.reloadDash();
@@ -85,13 +93,17 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-      // m_drivetrain.closeAHRS();
+    // m_drivetrain.closeAHRS();
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  /**
+   * This autonomous runs the autonomous command selected by your
+   * {@link RobotContainer} class.
+   */
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -106,88 +118,109 @@ public class Robot extends TimedRobot {
     m_drivetrain.setMotorSafety(false);
     m_drivetrain.resetEncoders();
 
-    if (NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("StationNumber").getInteger(0) == 2) startingPosition = 2;
-    else if (NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("StationNumber").getInteger(0) == 1) startingPosition = 1;
-    else startingPosition = 3;
-    int[][] rotateSpeeds = {{1,-1},{1,-1},{-1,1}};
-
+    if (NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("StationNumber").getInteger(0) == 2)
+      startingPosition = 2;
+    else if (NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("StationNumber").getInteger(0) == 1)
+      startingPosition = 1;
+    else
+      startingPosition = 3;
+      
+    // int[][] rotateSpeeds = { { 1, -1 }, { 1, -1 }, { -1, 1 } };
 
     m_drivetrain.resetEncoders();
-    //m_drivetrain.reloadDash();
-    //Timer.delay(0.1);
+    // m_drivetrain.reloadDash();
+    // Timer.delay(0.1);
 
     // m_drivetrain.tankDrive(0, 0);
     // while (true){
-    //   while(m_drivetrain.getLeftEncoder() < 4.5 && -m_drivetrain.getRightEncoder() < 4.5){
-    //     m_drivetrain.tankDrive(-1,-1);
-    //   }
-    //   m_drivetrain.tankDrive(0, 0);
-    //   while(m_drivetrain.getLeftEncoder() > 5.5 && -m_drivetrain.getRightEncoder() > 5.5){
-    //     m_drivetrain.tankDrive(1,1);
-    //   }
-    //   m_drivetrain.tankDrive(0, 0);
+    // while(m_drivetrain.getLeftEncoder() < 4.5 && -m_drivetrain.getRightEncoder()
+    // < 4.5){
+    // m_drivetrain.tankDrive(-1,-1);
+    // }
+    // m_drivetrain.tankDrive(0, 0);
+    // while(m_drivetrain.getLeftEncoder() > 5.5 && -m_drivetrain.getRightEncoder()
+    // > 5.5){
+    // m_drivetrain.tankDrive(1,1);
+    // }
+    // m_drivetrain.tankDrive(0, 0);
 
-    //   Timer.delay(0.5);
-    //   System.out.println(m_drivetrain.getLeftEncoder());
-    //   System.out.println(m_drivetrain.getRightEncoder());
+    // Timer.delay(0.5);
+    // System.out.println(m_drivetrain.getLeftEncoder());
+    // System.out.println(m_drivetrain.getRightEncoder());
 
-    //   if((m_drivetrain.getLeftEncoder() > 4.5 && m_drivetrain.getLeftEncoder() < 5.5) && 
-    //   (-m_drivetrain.getRightEncoder() > 4.5 && -m_drivetrain.getRightEncoder() < 5.5)){
-    //     break;
-    //   }
-    //   Timer.delay(1);
+    // if((m_drivetrain.getLeftEncoder() > 4.5 && m_drivetrain.getLeftEncoder() <
+    // 5.5) &&
+    // (-m_drivetrain.getRightEncoder() > 4.5 && -m_drivetrain.getRightEncoder() <
+    // 5.5)){
+    // break;
+    // }
+    // Timer.delay(1);
     // }
 
-    //preset arm control down 52
+    /*
+     * This is the initial game piece score
+     */
+    // preset arm control down 52
     double armSpeed = Constants.armSpeed;
-    while (m_arm.getEncoder() > 0.52) m_arm.raise(-0.3);
+    while (m_arm.getEncoder() > 0.52)
+      m_arm.raise(-0.3);
     m_arm.raise(0.1);
 
-    //Outtakes Cone For 1.5 Seconds
+    /*
+     * Cone is released
+     */
+    // Outtakes Cone For 1.5 Seconds
     m_arm.intake(-Constants.intakeSpeed);
     Timer.delay(0.5);
     m_arm.intake(0);
-    // SmartDashboard.getBoolean(null, isAutonomous());
+
     
-    // if (startingPosition )
-
-    //Move Arm To Starting Location
-    while(m_arm.getEncoder() < 0.75) m_arm.raise(armSpeed);
+    // Move Arm To Starting Location
+    while (m_arm.getEncoder() < 0.65)
+      m_arm.raise(armSpeed);
     m_arm.raise(0);
-
+      
+    // Drive the robot backwards to leave the community!
     m_drivetrain.tankDrive(1, 1);
-    Timer.delay(0.5);
-    if (startingPosition == 2) Timer.delay(0.5);
+    Timer.delay(3.5);
     m_drivetrain.tankDrive(0, 0);
 
-    //Turn Off BrakeMode
-    m_drivetrain.setBrakeMode(false);
-
-    // m_drivetrain.resetEncoders();
-    
-    if(startingPosition == 2) {
-    //   //Rotate Robot 90
-    //   while(m_drivetrain.getLeftEncoder() < 6 && -m_drivetrain.getRightEncoder() < 6){
-    //     m_drivetrain.tankDrive(1,-1);
-    //   }
-    //   m_drivetrain.tankDrive(0, 0);
-    } else {
-      m_drivetrain.resetEncoders();
-      //Rotate Robot 180
-      double count = 1.16;
-      m_drivetrain.tankDrive(rotateSpeeds[startingPosition-1][0],rotateSpeeds[startingPosition-1][1]);
-      Timer.delay(count);
-      m_drivetrain.tankDrive(0, 0);
-    }
-
-    m_arm.raise(-armSpeed);
-    Timer.delay(2);
-    m_arm.raise(0);
 
 
-    if (startingPosition == 2) m_drivetrain.tankDrive(1, 1);
-    else m_drivetrain.tankDrive(-1,-1);
 
+
+
+
+    // Timer.delay(0.5);
+    // if (startingPosition == 2)
+    //   Timer.delay(0.5);
+    // m_drivetrain.tankDrive(0, 0);
+
+    // // Turn Off BrakeMode
+    // m_drivetrain.setBrakeMode(false);
+
+    // // m_drivetrain.resetEncoders();
+
+    // // if (startingPosition == 2) {
+    // //   // //Rotate Robot 90
+    // //   // while(m_drivetrain.getLeftEncoder() < 6 && -m_drivetrain.getRightEncoder() <
+    // //   // 6){
+    // //   // m_drivetrain.tankDrive(1,-1);
+    // //   // }
+    // //   // m_drivetrain.tankDrive(0, 0);
+    // // } else {
+    // //   m_drivetrain.resetEncoders();
+    // //   // Rotate Robot 180
+    // //   double count = 1.16;
+    // //   m_drivetrain.tankDrive(rotateSpeeds[startingPosition - 1][0], rotateSpeeds[startingPosition - 1][1]);
+    // //   Timer.delay(count);
+    // //   m_drivetrain.tankDrive(0, 0);
+    // // }
+
+    // if (startingPosition == 2)
+    //   m_drivetrain.tankDrive(1, 1);
+    // else
+    // m_drivetrain.tankDrive(-1, -1);
 
     // //Put Arm to 36 or 35 Preset
     // while (m_arm.getEncoder() > 0.36) m_arm.raise(-0.4);
@@ -196,14 +229,13 @@ public class Robot extends TimedRobot {
     // //Turn on Cube Intake
     // m_arm.intake(-Constants.intakeSpeed);
 
-    if (startingPosition == 2) m_drivetrain.setBrakeMode(true);
-    else Timer.delay(0.5);
-    Timer.delay(2.5);
-
+    // if (startingPosition == 2)
+    //   m_drivetrain.setBrakeMode(true);
+    // else
+    //   Timer.delay(0.5);
 
     // //Turn off Cube Intake
     // m_arm.intake(0);
-
 
     // // //Move Arm to 54
     // // while(m_arm.getEncoder() < 0.54) m_arm.raise(armSpeed);
@@ -213,8 +245,9 @@ public class Robot extends TimedRobot {
     // m_drivetrain.resetEncoders();
 
     // // //Flip 180
-    // // while(m_drivetrain.getLeftEncoder() < 9 && -m_drivetrain.getRightEncoder() < 9){
-    // //   m_drivetrain.tankDrive(1,-1);
+    // // while(m_drivetrain.getLeftEncoder() < 9 && -m_drivetrain.getRightEncoder()
+    // < 9){
+    // // m_drivetrain.tankDrive(1,-1);
     // // }
 
     // //Turn off Robot
@@ -223,9 +256,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
-  
   @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
@@ -236,7 +269,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     XboxController1 = new XboxController(Constants.XboxController1);
-    
+
     m_drivetrain.calibrateAHRS();
     m_drivetrain.setBrakeMode(false);
     m_drivetrain.setMotorSafety(true);
@@ -254,7 +287,8 @@ public class Robot extends TimedRobot {
     double armSpeed = Constants.armSpeed;
     double intakeSpeed = Constants.intakeSpeed;
 
-    if (XboxController0.getXButton()) m_drivetrain.toggleBrakeMode();
+    if (XboxController0.getXButton())
+      m_drivetrain.toggleBrakeMode();
 
     if (get0LeftTrigger > 0) {
       get0LeftY = get0LeftTrigger;
@@ -266,80 +300,83 @@ public class Robot extends TimedRobot {
     }
 
     m_drivetrain.tankDrive(get0LeftY * Constants.driverPower,
-                          get0RightY * Constants.driverPower);
+        get0RightY * Constants.driverPower);
 
     // if bumpers, read bumpers, else read leftStick
-    if(XboxController1.getLeftBumper()) {
+    if (XboxController1.getLeftBumper()) {
       m_arm.raise(armSpeed);
-    } else
-    if(XboxController1.getRightBumper()) {
+    } else if (XboxController1.getRightBumper()) {
       m_arm.raise(-armSpeed);
-    } else
-    if (XboxController1.getAButton()) { //grid
-      if      (m_arm.getEncoder() < 0.52) m_arm.raise(armSpeed);
-      else if (m_arm.getEncoder() > 0.56) m_arm.raise(-0.4);
-      else if (m_arm.getEncoder() > 0.52) m_arm.raise(-0.3);
-      else m_arm.raise(0.1);
-    } else
-    if (XboxController1.getBButton()) { //shelf load
-      if      (m_arm.getEncoder() < 0.49) m_arm.raise(armSpeed);
-      else if (m_arm.getEncoder() < 0.64) m_arm.raise(0.4);
-      else if (m_arm.getEncoder() > 0.70) m_arm.raise(-0.4);
-      else if (m_arm.getEncoder() > 0.66) m_arm.raise(-0.3);
-      else m_arm.raise(0);
-    } else
-    if (XboxController1.getXButton()) { //cone
-      if (m_arm.getEncoder() > 0.36) m_arm.raise(-armSpeed);
-      else m_arm.raise(0);
-    } else
-    {
+    } else if (XboxController1.getAButton()) { // grid
+      if (m_arm.getEncoder() < 0.52)
+        m_arm.raise(armSpeed);
+      else if (m_arm.getEncoder() > 0.56)
+        m_arm.raise(-0.4);
+      else if (m_arm.getEncoder() > 0.52)
+        m_arm.raise(-0.3);
+      else
+        m_arm.raise(0.1);
+    } else if (XboxController1.getBButton()) { // shelf load
+      if (m_arm.getEncoder() < 0.49)
+        m_arm.raise(armSpeed);
+      else if (m_arm.getEncoder() < 0.64)
+        m_arm.raise(0.4);
+      else if (m_arm.getEncoder() > 0.70)
+        m_arm.raise(-0.4);
+      else if (m_arm.getEncoder() > 0.66)
+        m_arm.raise(-0.3);
+      else
+        m_arm.raise(0);
+    } else if (XboxController1.getXButton()) { // cone
+      if (m_arm.getEncoder() > 0.36)
+        m_arm.raise(-armSpeed);
+      else
+        m_arm.raise(0);
+    } else {
       m_arm.raise(-get1LeftY * armSpeed);
     }
     // else m_arm.raise(0.0d); //d converts to double
-    
+
     // UNTESTED
     // if triggers, read triggers, else read rightStick
-    if(XboxController1.getLeftTriggerAxis() > 0) {
+    if (XboxController1.getLeftTriggerAxis() > 0) {
       m_arm.intake(XboxController1.getLeftTriggerAxis() * intakeSpeed);
-    } else
-    if(XboxController1.getRightTriggerAxis() > 0) {
+    } else if (XboxController1.getRightTriggerAxis() > 0) {
       m_arm.intake(-XboxController1.getRightTriggerAxis() * intakeSpeed);
     } else {
       m_arm.intake(get1RightY * intakeSpeed);
     }
-    
-    //dont fall from gravity
-    //if(XboxController0.getAButtonPressed()){
-      // if(Constants.ft == true){
-      //     encoderValueStart = m_arm.getEncoder();
-      //     Constants.ft = false;
-      // }
-      // if(XboxController1.getLeftTriggerAxis() == 0){
-      //   if(m_arm.getEncoder() - encoderValueStart != 0){// && 0 > m_arm.getEncoder() - encoderValueStart && m_arm.getEncoder() - encoderValueStart > 0.4){
-      //     m_arm.raise((m_arm.getEncoder() - encoderValueStart));
-      //   }
-      //   encoderValueStart = m_arm.getEncoder();
-      // }
-    //}
+
+    // dont fall from gravity
+    // if(XboxController0.getAButtonPressed()){
+    // if(Constants.ft == true){
+    // encoderValueStart = m_arm.getEncoder();
+    // Constants.ft = false;
+    // }
+    // if(XboxController1.getLeftTriggerAxis() == 0){
+    // if(m_arm.getEncoder() - encoderValueStart != 0){// && 0 > m_arm.getEncoder()
+    // - encoderValueStart && m_arm.getEncoder() - encoderValueStart > 0.4){
+    // m_arm.raise((m_arm.getEncoder() - encoderValueStart));
+    // }
+    // encoderValueStart = m_arm.getEncoder();
+    // }
+    // }
     /*
-    //temporary values for arm positions potentially - might end up removing
-    if(XboxController1.getAButton()){
-      m_arm.raise(1);
-    }
-    if(XboxController1.getBButton()){
-      m_arm.raise(2);
-    }
-    if(XboxController1.getXButton()){
-      m_arm.raise(3);
-    }
-    if(XboxController1.getYButton()){
-      m_arm.raise(4);
-    }
-    */
+     * //temporary values for arm positions potentially - might end up removing
+     * if(XboxController1.getAButton()){
+     * m_arm.raise(1);
+     * }
+     * if(XboxController1.getBButton()){
+     * m_arm.raise(2);
+     * }
+     * if(XboxController1.getXButton()){
+     * m_arm.raise(3);
+     * }
+     * if(XboxController1.getYButton()){
+     * m_arm.raise(4);
+     * }
+     */
   }
-
-
-
 
   @Override
   public void testInit() {
@@ -350,8 +387,7 @@ public class Robot extends TimedRobot {
     m_drivetrain.calibrateAHRS();
     m_drivetrain.setBrakeMode(false);
 
-
-    }
+  }
 
   /** This function is called periodically during test mode. */
   @Override
@@ -359,43 +395,46 @@ public class Robot extends TimedRobot {
     double getLeftY = XboxController0.getLeftY();
     double getRightY = XboxController0.getRightY();
     // double left = pid.calculate(previousLeft, getLeftY);
-    // double right = 
-    //double previousLeft = left;
-
-
+    // double right =
+    // double previousLeft = left;
 
     m_drivetrain.tankDrive(getLeftY * Constants.driverPower,
-                           getRightY * Constants.driverPower);
+        getRightY * Constants.driverPower);
 
-    if(XboxController0.getXButton()) { //11
+    if (XboxController0.getXButton()) { // 11
       m_drivetrain.testMotor(1);
     }
-    if(XboxController0.getYButton()) { //12
+    if (XboxController0.getYButton()) { // 12
       m_drivetrain.testMotor(2);
     }
-    if(XboxController0.getAButton()) { //13
+    if (XboxController0.getAButton()) { // 13
       m_drivetrain.testMotor(3);
     }
     /* ============================= */
     switch (XboxController0.getPOV()) {
-      case   0:m_drivetrain.testMotor(4);break;
-      case  90:m_drivetrain.testMotor(5);break;
-      case 180:m_drivetrain.testMotor(6);break;
-    
+      case 0:
+        m_drivetrain.testMotor(4);
+        break;
+      case 90:
+        m_drivetrain.testMotor(5);
+        break;
+      case 180:
+        m_drivetrain.testMotor(6);
+        break;
+
       default:
         break;
     }
 
-    if(XboxController0.getLeftBumper()) {
+    if (XboxController0.getLeftBumper()) {
       m_arm.raise(Constants.armSpeed);
-    } else
-    if(XboxController0.getRightBumper()) {
+    } else if (XboxController0.getRightBumper()) {
       m_arm.raise(-Constants.armSpeed);
     } else {
       m_arm.raise(0);
     }
-    
-    if(XboxController0.getLeftTriggerAxis() > 0) {
+
+    if (XboxController0.getLeftTriggerAxis() > 0) {
       m_arm.intake(XboxController0.getLeftTriggerAxis() * Constants.intakeSpeed);
     } else {
       m_arm.intake(-XboxController0.getRightTriggerAxis() * Constants.intakeSpeed);
@@ -405,9 +444,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }
