@@ -183,12 +183,17 @@ public class Robot extends TimedRobot {
     // Drive the robot backwards to leave the community!
     m_drivetrain.tankDrive(1, 1);
     Timer.delay(3.5);
+
+    // Middle Balance
+    // m_drivetrain.setBrakeMode(true);
+    //m_drivetrain.tankDrive(1, 1);
+    // Timer.delay(1);
+    // while (m_arm.getEncoder() > 0.38)
+    //   m_arm.raise(-armSpeed);
+    // m_arm.raise(0);
+    // Timer.delay(1);
+    
     m_drivetrain.tankDrive(0, 0);
-
-
-
-
-
 
 
     // Timer.delay(0.5);
@@ -248,7 +253,7 @@ public class Robot extends TimedRobot {
     // // while(m_drivetrain.getLeftEncoder() < 9 && -m_drivetrain.getRightEncoder()
     // < 9){
     // // m_drivetrain.tankDrive(1,-1);
-    // // }
+    // // } 
 
     // //Turn off Robot
     m_drivetrain.tankDrive(0, 0);
@@ -299,8 +304,16 @@ public class Robot extends TimedRobot {
       get0RightY = -get0RightTrigger;
     }
 
-    m_drivetrain.tankDrive(get0LeftY * Constants.driverPower,
-        get0RightY * Constants.driverPower);
+    m_drivetrain.TOtankDrive(get0LeftY,
+        get0RightY);
+
+    if(XboxController0.getLeftBumperPressed()){
+      Constants.TELEOPPower -= 0.03;
+    }
+    if(XboxController0.getRightBumperPressed()){
+      Constants.TELEOPPower += 0.03;
+    }
+    SmartDashboard.putNumber("Speed", Constants.TELEOPPower);
 
     // if bumpers, read bumpers, else read leftStick
     if (XboxController1.getLeftBumper()) {
@@ -336,8 +349,10 @@ public class Robot extends TimedRobot {
       m_arm.raise(-get1LeftY * armSpeed);
     }
     // else m_arm.raise(0.0d); //d converts to double
+    
+    if (XboxController1.getRightStickButtonPressed()) Constants.toggleTOP();
 
-    // UNTESTED
+
     // if triggers, read triggers, else read rightStick
     if (XboxController1.getLeftTriggerAxis() > 0) {
       m_arm.intake(XboxController1.getLeftTriggerAxis() * intakeSpeed);
@@ -398,8 +413,7 @@ public class Robot extends TimedRobot {
     // double right =
     // double previousLeft = left;
 
-    m_drivetrain.tankDrive(getLeftY * Constants.driverPower,
-        getRightY * Constants.driverPower);
+    m_drivetrain.TOtankDrive(getLeftY, getRightY);
 
     if (XboxController0.getXButton()) { // 11
       m_drivetrain.testMotor(1);

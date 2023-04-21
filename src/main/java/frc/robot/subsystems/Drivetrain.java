@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -68,7 +69,16 @@ public class Drivetrain extends SubsystemBase {
         filter = new SlewRateLimiter(5);
 
     }
+    
 
+    //TO = teleop
+    public void TOtankDrive(double y_left, double y_right) {
+        //square values while maintaining sign
+        //----
+        y_left  *= Math.abs(y_left)  * Constants.drivetrainPower * Constants.TELEOPPower;
+        y_right *= Math.abs(y_right) * Constants.drivetrainPower * Constants.TELEOPPower;
+        m_drive.tankDrive(y_left, y_right);
+    }
     public void tankDrive(double y_left, double y_right){
         // y_left = filter.calculate(y_left);
         // y_right = filter.calculate(y_right);
@@ -78,6 +88,7 @@ public class Drivetrain extends SubsystemBase {
         y_right *= Math.abs(y_right) * Constants.drivetrainPower;
         m_drive.tankDrive(y_left, y_right);
     }
+
 
     public boolean toggleBrakeMode() {
         setBrakeMode(!isBrakeMode);

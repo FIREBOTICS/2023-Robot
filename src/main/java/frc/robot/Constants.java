@@ -17,7 +17,13 @@ public final class Constants {
     public static int[] left_DT_CAN = {11,12,13};
     public static int[] rite_DT_CAN = {14,15,16};
     public static double drivetrainPower = 0.5;//.5
-    public static double driverPower = 1.04;
+    public static double TELEOPPower = 1.25;
+
+    public static void toggleTOP() {
+        if (TELEOPPower == 1.15) TELEOPPower = 1.25;
+        else if (TELEOPPower == 1.25) TELEOPPower = 1;
+        else TELEOPPower = 1.15;
+    }
 
     // Auto-Balancing
     public static final double angleOffThreshold = 10;
@@ -26,7 +32,7 @@ public final class Constants {
 
     // Arm
     public static int[] arm_CAN = {20,21};
-    public static double armSpeed = 0.5;
+    public static double armSpeed = 0.7;
     public static double intakeSpeed = 1;
 
     // PID
